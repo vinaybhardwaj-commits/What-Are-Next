@@ -178,7 +178,7 @@ function Card({ ini }: { ini: Ini }) {
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
           {ini.gtdStatus === "someday" && <span className="rounded bg-secondary px-1.5 py-0.5">someday</span>}
           {ini.actionCount > 0 && <span>{ini.actionCount} action{ini.actionCount > 1 ? "s" : ""}</span>}
-          {ini.goalTitle && <span className="inline-flex max-w-full items-center gap-0.5 truncate rounded bg-primary/10 px-1.5 py-0.5 text-primary" title={ini.goalTitle}>\u25CE {ini.goalTitle}</span>}
+          {ini.goalTitle && <span className="inline-flex max-w-full items-center gap-0.5 truncate rounded bg-primary/10 px-1.5 py-0.5 text-primary" title={ini.goalTitle}>◎ {ini.goalTitle}</span>}
         </div>
       </Link>
     </div>
