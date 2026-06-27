@@ -8,6 +8,8 @@ import { KernelEditor } from "@/components/kernel-editor";
 import { GoalStatus } from "@/components/goal-status";
 import { GoalHorizon } from "@/components/goal-horizon";
 import { InitiativeGoalLinker } from "@/components/initiative-goal-linker";
+import { KernelCritique } from "@/components/kernel-critique";
+import { NudgeDraft } from "@/components/nudge-draft";
 import { NotesEditor } from "@/components/notes-editor";
 import { TaskList } from "@/components/task-list";
 import { AddAction } from "@/components/add-action";
@@ -49,6 +51,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
           <KernelEditor goalId={goal.id} kernelId={kernel.id} diagnosis={kernel.diagnosis} principles={guidingPrinciples}
             coherent={coherent.map((c) => ({ id: c.id, text: c.text, linkedNodeId: c.linkedNodeId, linkedTitle: c.linkedTitle }))}
             allInitiatives={allInitiatives.map((i) => ({ id: i.id, title: i.title }))} />
+          <div className="mt-4"><KernelCritique goalId={goal.id} /></div>
         </Section>
         <Section title={`Linked initiatives (${linkedInitiatives.length})`}>
           {linkedInitiatives.length === 0 ? <p className="text-sm text-muted-foreground">No initiatives linked yet. Link them from an initiative page or via a coherent action above.</p> : (
@@ -81,6 +84,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
         <Link href="/gtd" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> GTD Lists</Link>
         <h1 className="mt-1 text-2xl font-semibold text-even-navy">{task.title}</h1>
         <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} /></div>
+        {task.waitingOnPersonId && <div className="mt-4"><NudgeDraft taskId={id} /></div>}
         <NodePayload nodeType="task" nodeId={id} />
         {log.length > 0 && (
           <Section title="History">

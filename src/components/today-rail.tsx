@@ -3,6 +3,7 @@ import { db } from "@/db";
 import { people } from "@/db/schema";
 import { getEnrichedTasks, bucketize } from "@/lib/gtd";
 import { TaskRow } from "@/components/task-row";
+import { DailyBrief } from "@/components/daily-brief";
 
 export async function TodayRail() {
   const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people)]);
@@ -25,6 +26,7 @@ export async function TodayRail() {
         <h2 className="text-lg font-semibold text-even-navy">Today</h2>
         <Link href="/gtd" className="text-xs text-primary hover:underline">All lists →</Link>
       </div>
+      <DailyBrief />
       {empty ? (
         <div className="rounded-lg border border-dashed p-4 text-sm text-muted-foreground">
           Nothing queued. Press <kbd className="rounded border px-1">c</kbd> to capture, then clarify from the Inbox.

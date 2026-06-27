@@ -1,6 +1,8 @@
 "use client";
 import { useState, useTransition } from "react";
 import { clarifyToTask, clarifyDrop } from "@/lib/actions";
+import { parseCapture } from "@/lib/ai/capabilities";
+import { Sparkles, Loader2 } from "lucide-react";
 
 type Ini = { id: string; title: string };
 type P = { id: string; name: string };
@@ -14,6 +16,16 @@ export function ClarifyRow({ item, initiatives, people }: { item: { id: string; 
   const [due, setDue] = useState("");
   const [, start] = useTransition();
   const [open, setOpen] = useState(false);
+  const [parsing, setParsing] = useState(false);
+  const [reason, setReason] = useState<string | null>(null);
+  async function aiParse() {
+    setParsing(true);
+    try {
+      const r = await parseCapture(item.rawText);
+      setTitle(r.title); setInitiativeId(r.initiativeId || ""); setWaitingOn(r.waitingOnPersonId || "");
+      setContexts(r.contexts || []); setDue(r.dueDate || ""); setReason(r.initiativeReason || null); setOpen(true);
+    } finally { setParsing(false); }
+  }
 
   return (
     <div className="rounded-xl border bg-white p-4">
@@ -21,12 +33,14 @@ export function ClarifyRow({ item, initiatives, people }: { item: { id: string; 
         className="w-full rounded-lg border border-input px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
       {!open ? (
         <div className="mt-3 flex items-center gap-2">
+          <button onClick={aiParse} disabled={parsing} className="inline-flex items-center gap-1 rounded-lg bg-accent px-3 py-1.5 text-sm font-medium text-accent-foreground disabled:opacity-50">{parsing ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />} Parse with AI</button>
           <button onClick={() => setOpen(true)} className="rounded-lg bg-primary px-3 py-1.5 text-sm font-medium text-primary-foreground">Clarify → Task</button>
           <button onClick={() => start(() => clarifyDrop(item.id, "someday"))} className="rounded-lg border px-3 py-1.5 text-sm">Someday</button>
           <button onClick={() => start(() => clarifyDrop(item.id, "drop"))} className="rounded-lg border px-3 py-1.5 text-sm text-muted-foreground">Drop</button>
         </div>
       ) : (
         <div className="mt-3 space-y-2 text-sm">
+          {reason && <div className="rounded bg-accent/10 px-2 py-1 text-xs text-accent-foreground"><span className="font-medium">AI:</span> {reason}</div>}
           <div className="grid grid-cols-2 gap-2">
             <label className="flex flex-col gap-1"><span className="text-xs text-muted-foreground">Initiative</span>
               <select value={initiativeId} onChange={(e) => setInitiativeId(e.target.value)} className="rounded border bg-white px-2 py-1.5">

@@ -1,6 +1,7 @@
 import { AppSidebar } from "@/components/app-sidebar";
 import { Capture } from "@/components/capture";
 import { CommandPalette } from "@/components/command-palette";
+import { Assistant } from "@/components/assistant";
 import { getCommandIndex } from "@/lib/strategy";
 
 export const dynamic = "force-dynamic";
@@ -13,6 +14,7 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       <main className="flex-1 overflow-y-auto bg-even-surface">{children}</main>
       <Capture />
       <CommandPalette index={index} />
+      <Assistant />
     </div>
   );
 }
