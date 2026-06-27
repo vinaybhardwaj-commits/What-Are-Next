@@ -20,15 +20,21 @@ export function KernelEditor({ goalId, kernelId, diagnosis, principles, coherent
 
   return (
     <div className="space-y-6">
+      <p className="rounded-lg bg-secondary/60 px-3 py-1.5 text-xs text-muted-foreground">Everything here saves automatically as you add it — principles and coherent actions persist the moment you press <span className="font-medium">+</span>. The diagnosis saves when you click away (or hit Save).</p>
       {/* Diagnosis */}
       <div>
         <div className="mb-1 text-sm font-semibold text-even-navy">Diagnosis <span className="font-normal text-muted-foreground">— what's actually going on / the crux</span></div>
-        <textarea value={diag} onChange={(e) => { setDiag(e.target.value); setSavedDiag(false); }} rows={3}
+        <textarea value={diag}
+          onChange={(e) => { setDiag(e.target.value); setSavedDiag(false); }}
+          onBlur={() => { if (diag !== (diagnosis ?? "")) start(async () => { await saveDiagnosis(kernelId, goalId, diag); setSavedDiag(true); }); }}
+          rows={3}
           className="w-full rounded-lg border border-input bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-ring"
           placeholder="Name the real crux this goal addresses…" />
-        <button onClick={() => start(async () => { await saveDiagnosis(kernelId, goalId, diag); setSavedDiag(true); })}
-          className="mt-1 rounded-lg border px-3 py-1 text-xs">Save diagnosis</button>
-        {savedDiag && <span className="ml-2 text-xs text-health-green">Saved</span>}
+        <div className="mt-1 flex items-center gap-2">
+          <button onClick={() => start(async () => { await saveDiagnosis(kernelId, goalId, diag); setSavedDiag(true); })}
+            className="rounded-lg border px-3 py-1 text-xs">Save diagnosis</button>
+          {savedDiag ? <span className="text-xs text-health-green">✓ Saved</span> : (diag !== (diagnosis ?? "") && diag) ? <span className="text-xs text-muted-foreground">saves when you click away…</span> : null}
+        </div>
       </div>
 
       {/* Guiding principles */}
