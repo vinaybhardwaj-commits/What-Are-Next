@@ -387,3 +387,15 @@ export async function archivePerson(id: string) {
   await db.update(people).set({ archivedAt: new Date() }).where(eq(people.id, id));
   revalidatePath("/people"); revalidatePath("/");
 }
+
+/* Quick-add a task straight into a GTD list (Next Actions / Someday). */
+export async function addTaskToList(title: string, status: "next" | "someday", contexts: string[] = [], initiativeId: string | null = null) {
+  const t = title.trim(); if (!t) return;
+  const [m] = await db.select({ v: max(tasks.sortOrder) }).from(tasks);
+  const [row] = await db.insert(tasks).values({
+    title: t, gtdStatus: status, isNextAction: status === "next",
+    contexts, initiativeId: initiativeId || null, sortOrder: (m?.v ?? 0) + 1,
+  }).returning();
+  await log("task", row.id, "created");
+  revalGtd();
+}
