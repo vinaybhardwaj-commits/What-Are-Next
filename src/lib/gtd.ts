@@ -1,7 +1,7 @@
 import "server-only";
 import { db } from "@/db";
 import {
-  tasks, actions, initiatives, domains, people, dependencies, inboxItems, activityLog,
+  tasks, actions, initiatives, domains, people, dependencies, inboxItems, activityLog, tags,
 } from "@/db/schema";
 import { and, asc, desc, eq, isNull, ne } from "drizzle-orm";
 
@@ -124,4 +124,14 @@ export async function getTaskDetail(id: string) {
 
 export async function getRoster() {
   return db.select().from(people).where(isNull(people.archivedAt)).orderBy(asc(people.name));
+}
+
+const DEFAULT_CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
+export async function getContexts(): Promise<string[]> {
+  let rows = await db.select().from(tags).where(eq(tags.kind, "context")).orderBy(asc(tags.name));
+  if (rows.length === 0) {
+    await db.insert(tags).values(DEFAULT_CONTEXTS.map((name) => ({ name, kind: "context" as const })));
+    rows = await db.select().from(tags).where(eq(tags.kind, "context")).orderBy(asc(tags.name));
+  }
+  return rows.map((r) => r.name);
 }

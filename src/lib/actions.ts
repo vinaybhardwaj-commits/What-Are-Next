@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps, goals, strategyKernels, kernelActions, people } from "@/db/schema";
+import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps, goals, strategyKernels, kernelActions, people, tags } from "@/db/schema";
 import { and, asc, desc, eq, isNull, max , sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -398,4 +398,22 @@ export async function addTaskToList(title: string, status: "next" | "someday", c
   }).returning();
   await log("task", row.id, "created");
   revalGtd();
+}
+
+/* ============================ Contexts (GTD @contexts registry) ============================ */
+function normContext(s: string) {
+  let v = s.trim().toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9@\-]/g, "");
+  if (!v) return "";
+  if (!v.startsWith("@")) v = "@" + v;
+  return v;
+}
+export async function addContext(name: string) {
+  const v = normContext(name); if (!v) return;
+  const existing = await db.select().from(tags).where(and(eq(tags.kind, "context"), eq(tags.name, v)));
+  if (existing.length === 0) await db.insert(tags).values({ name: v, kind: "context" });
+  revalidatePath("/gtd"); revalidatePath("/inbox"); revalidatePath("/");
+}
+export async function removeContext(name: string) {
+  await db.delete(tags).where(and(eq(tags.kind, "context"), eq(tags.name, name)));
+  revalidatePath("/gtd"); revalidatePath("/inbox"); revalidatePath("/");
 }

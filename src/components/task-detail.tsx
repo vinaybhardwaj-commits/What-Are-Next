@@ -15,13 +15,13 @@ type Task = {
 };
 
 const STATUSES = ["inbox", "next", "waiting", "scheduled", "someday", "done", "dropped"];
-const CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
+const DEFAULT_CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <label className="flex flex-col gap-1"><span className="text-xs text-muted-foreground">{label}</span>{children}</label>;
 }
 
-export function TaskDetail({ task, people, deps }: { task: Task; people: P[]; deps: Dep[] }) {
+export function TaskDetail({ task, people, deps, contexts = DEFAULT_CONTEXTS }: { task: Task; people: P[]; deps: Dep[]; contexts?: string[] }) {
   const [, start] = useTransition();
   const [notes, setNotes] = useState(task.notes ?? "");
   const [compNote, setCompNote] = useState("");
@@ -61,7 +61,7 @@ export function TaskDetail({ task, people, deps }: { task: Task; people: P[]; de
       <div>
         <div className="mb-1 text-xs text-muted-foreground">Contexts</div>
         <div className="flex flex-wrap gap-1">
-          {CONTEXTS.map((c) => {
+          {contexts.map((c) => {
             const on = task.contexts.includes(c);
             return <button key={c} onClick={() => start(() => setContexts(task.id, on ? task.contexts.filter((x) => x !== c) : [...task.contexts, c]))}
               className={cn("rounded px-2 py-0.5 text-xs", on ? "bg-primary text-primary-foreground" : "border bg-white")}>{c}</button>;

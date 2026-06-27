@@ -1,4 +1,4 @@
-import { getPeopleFollowups, getRoster } from "@/lib/gtd";
+import { getPeopleFollowups, getRoster, getContexts } from "@/lib/gtd";
 import { TaskRow } from "@/components/task-row";
 import { Avatar } from "@/components/avatars";
 import { PeopleManager } from "@/components/people-manager";
@@ -6,7 +6,7 @@ import { PeopleManager } from "@/components/people-manager";
 export const dynamic = "force-dynamic";
 
 export default async function PeoplePage() {
-  const [rows, roster] = await Promise.all([getPeopleFollowups(), getRoster()]);
+  const [rows, roster, contexts] = await Promise.all([getPeopleFollowups(), getRoster(), getContexts()]);
   const persons = rows.map((r) => ({ id: r.person.id, name: r.person.name, color: r.person.avatarColor }));
   const active = rows.filter((r) => r.waitingOn.length + r.assigned.length > 0);
   return (
@@ -25,8 +25,8 @@ export default async function PeoplePage() {
                 <span className="font-medium text-even-navy">{r.person.name}</span>
                 {r.person.role && <span className="text-xs text-muted-foreground">{r.person.role}</span>}
               </div>
-              {r.waitingOn.length > 0 && <><div className="mb-1 text-xs font-semibold uppercase tracking-wide text-health-amber">Waiting on ({r.waitingOn.length})</div><div className="mb-3 space-y-1.5">{r.waitingOn.map((t) => <TaskRow key={t.id} task={t} people={persons} />)}</div></>}
-              {r.assigned.length > 0 && <><div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Delegated ({r.assigned.length})</div><div className="space-y-1.5">{r.assigned.map((t) => <TaskRow key={t.id} task={t} people={persons} />)}</div></>}
+              {r.waitingOn.length > 0 && <><div className="mb-1 text-xs font-semibold uppercase tracking-wide text-health-amber">Waiting on ({r.waitingOn.length})</div><div className="mb-3 space-y-1.5">{r.waitingOn.map((t) => <TaskRow key={t.id} task={t} people={persons} contexts={contexts} />)}</div></>}
+              {r.assigned.length > 0 && <><div className="mb-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Delegated ({r.assigned.length})</div><div className="space-y-1.5">{r.assigned.map((t) => <TaskRow key={t.id} task={t} people={persons} contexts={contexts} />)}</div></>}
             </div>
           ))}
         </div>

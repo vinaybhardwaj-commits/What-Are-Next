@@ -1,10 +1,10 @@
-import { getInbox, getClarifyTargets } from "@/lib/gtd";
+import { getInbox, getClarifyTargets, getContexts } from "@/lib/gtd";
 import { ClarifyRow } from "@/components/clarify-row";
 
 export const dynamic = "force-dynamic";
 
 export default async function InboxPage() {
-  const [items, targets] = await Promise.all([getInbox(), getClarifyTargets()]);
+  const [items, targets, contexts] = await Promise.all([getInbox(), getClarifyTargets(), getContexts()]);
   return (
     <div className="max-w-2xl p-6">
       <h1 className="text-xl font-semibold text-even-navy">Inbox</h1>
@@ -13,7 +13,7 @@ export default async function InboxPage() {
         <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">Inbox zero. Nice.</div>
       ) : (
         <div className="space-y-3">
-          {items.map((it) => <ClarifyRow key={it.id} item={{ id: it.id, rawText: it.rawText }} initiatives={targets.initiatives} people={targets.people} />)}
+          {items.map((it) => <ClarifyRow key={it.id} item={{ id: it.id, rawText: it.rawText }} initiatives={targets.initiatives} people={targets.people} contexts={contexts} />)}
         </div>
       )}
     </div>

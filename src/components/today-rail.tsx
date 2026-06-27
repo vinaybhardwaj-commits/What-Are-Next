@@ -2,12 +2,12 @@ import Link from "next/link";
 import { isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { people } from "@/db/schema";
-import { getEnrichedTasks, bucketize } from "@/lib/gtd";
+import { getEnrichedTasks, bucketize, getContexts } from "@/lib/gtd";
 import { TaskRow } from "@/components/task-row";
 import { DailyBrief } from "@/components/daily-brief";
 
 export async function TodayRail() {
-  const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people).where(isNull(people.archivedAt))]);
+  const [all, ppl, contexts] = await Promise.all([getEnrichedTasks(), db.select().from(people).where(isNull(people.archivedAt)), getContexts()]);
   const b = bucketize(all);
   const persons = ppl.map((p) => ({ id: p.id, name: p.name, color: p.avatarColor }));
 
@@ -15,7 +15,7 @@ export async function TodayRail() {
     items.length === 0 ? null : (
       <div>
         <div className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: tone }}>{title}<span className="text-muted-foreground">{items.length}</span></div>
-        <div className="space-y-1.5">{items.slice(0, 8).map((t) => <TaskRow key={t.id} task={t} people={persons} />)}</div>
+        <div className="space-y-1.5">{items.slice(0, 8).map((t) => <TaskRow key={t.id} task={t} people={persons} contexts={contexts} />)}</div>
       </div>
     );
 

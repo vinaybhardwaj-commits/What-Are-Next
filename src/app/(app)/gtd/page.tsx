@@ -1,13 +1,13 @@
 import { db } from "@/db";
 import { isNull } from "drizzle-orm";
 import { people } from "@/db/schema";
-import { getEnrichedTasks, bucketize } from "@/lib/gtd";
+import { getEnrichedTasks, bucketize, getContexts } from "@/lib/gtd";
 import { GtdLists } from "@/components/gtd-lists";
 
 export const dynamic = "force-dynamic";
 
 export default async function GtdPage() {
-  const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people).where(isNull(people.archivedAt))]);
+  const [all, ppl, contexts] = await Promise.all([getEnrichedTasks(), db.select().from(people).where(isNull(people.archivedAt)), getContexts()]);
   const b = bucketize(all);
   const inBucket = (id: string) => {
     const ks: string[] = [];
@@ -23,7 +23,7 @@ export default async function GtdPage() {
   return (
     <div className="p-6">
       <h1 className="mb-4 text-xl font-semibold text-even-navy">GTD Lists</h1>
-      <GtdLists tasks={tasks} people={persons} />
+      <GtdLists tasks={tasks} people={persons} contexts={contexts} />
     </div>
   );
 }

@@ -6,9 +6,9 @@ import { Sparkles, Loader2 } from "lucide-react";
 
 type Ini = { id: string; title: string };
 type P = { id: string; name: string };
-const CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
+const DEFAULT_CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
 
-export function ClarifyRow({ item, initiatives, people }: { item: { id: string; rawText: string }; initiatives: Ini[]; people: P[] }) {
+export function ClarifyRow({ item, initiatives, people, contexts: availableContexts = DEFAULT_CONTEXTS }: { item: { id: string; rawText: string }; initiatives: Ini[]; people: P[]; contexts?: string[] }) {
   const [title, setTitle] = useState(item.rawText);
   const [initiativeId, setInitiativeId] = useState("");
   const [waitingOn, setWaitingOn] = useState("");
@@ -59,7 +59,7 @@ export function ClarifyRow({ item, initiatives, people }: { item: { id: string; 
             <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="w-44 rounded border bg-white px-2 py-1.5" />
           </label>
           <div className="flex flex-wrap gap-1">
-            {CONTEXTS.map((c) => {
+            {availableContexts.map((c) => {
               const on = contexts.includes(c);
               return <button key={c} type="button" onClick={() => setContexts(on ? contexts.filter((x) => x !== c) : [...contexts, c])}
                 className={on ? "rounded bg-primary px-1.5 py-0.5 text-xs text-primary-foreground" : "rounded border bg-white px-1.5 py-0.5 text-xs"}>{c}</button>;

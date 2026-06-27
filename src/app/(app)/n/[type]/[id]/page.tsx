@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getInitiative, getAction } from "@/lib/queries";
-import { getTaskDetail } from "@/lib/gtd";
+import { getTaskDetail, getContexts } from "@/lib/gtd";
 import { getGoalDetail, getGoals } from "@/lib/strategy";
 import { KernelEditor } from "@/components/kernel-editor";
 import { GoalStatus } from "@/components/goal-status";
@@ -66,7 +66,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
   }
 
   if (type === "task") {
-    const data = await getTaskDetail(id);
+    const [data, contexts] = await Promise.all([getTaskDetail(id), getContexts()]);
     if (!data) notFound();
     const { task, people, dependencies, log } = data;
     const t = {
@@ -83,7 +83,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
       <div className="max-w-3xl p-6">
         <Link href="/gtd" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> GTD Lists</Link>
         <h1 className="mt-1 text-2xl font-semibold text-even-navy">{task.title}</h1>
-        <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} /></div>
+        <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} contexts={contexts} /></div>
         {task.waitingOnPersonId && <div className="mt-4"><NudgeDraft taskId={id} /></div>}
         <NodePayload nodeType="task" nodeId={id} />
         {log.length > 0 && (

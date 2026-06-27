@@ -15,9 +15,9 @@ export type RowTask = {
   path: { domain?: { name: string; color: string }; initiative?: { id: string; title: string } };
 };
 
-const CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
+const DEFAULT_CONTEXTS = ["@home", "@clinic", "@deep-work", "@calls", "@claude-code", "@errand", "@review"];
 
-export function TaskRow({ task, people }: { task: RowTask; people: P[] }) {
+export function TaskRow({ task, people, contexts = DEFAULT_CONTEXTS }: { task: RowTask; people: P[]; contexts?: string[] }) {
   const [, start] = useTransition();
   const [menu, setMenu] = useState(false);
   const done = task.gtdStatus === "done";
@@ -47,7 +47,7 @@ export function TaskRow({ task, people }: { task: RowTask; people: P[] }) {
           <Inline label="Block (reason)" placeholder="procurement approval…" onSubmit={(v) => start(() => addBlocker(task.id, { externalLabel: v }))} />
           <Inline label="Defer until" type="date" onSubmit={(v) => start(() => setDefer(task.id, v))} />
           <div className="flex flex-wrap gap-1">
-            {CONTEXTS.map((c) => {
+            {contexts.map((c) => {
               const on = task.contexts.includes(c);
               return <button key={c} onClick={() => start(() => setContexts(task.id, on ? task.contexts.filter((x) => x !== c) : [...task.contexts, c]))}
                 className={cn("rounded px-1.5 py-0.5", on ? "bg-primary text-primary-foreground" : "bg-white border")}>{c}</button>;
