@@ -51,7 +51,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
             allInitiatives={allInitiatives.map((i) => ({ id: i.id, title: i.title }))} />
         </Section>
         <Section title={`Linked initiatives (${linkedInitiatives.length})`}>
-          {linkedInitiatives.length === 0 ? <p className="text-sm text-muted-foreground">No initiatives linked yet. Link them from an initiative\u2019s page or via a coherent action above.</p> : (
+          {linkedInitiatives.length === 0 ? <p className="text-sm text-muted-foreground">No initiatives linked yet. Link them from an initiative page or via a coherent action above.</p> : (
             <ul className="space-y-2">
               {linkedInitiatives.map((i) => <li key={i.id}><Link href={`/n/initiative/${i.id}`} className="block rounded-lg border bg-white px-3 py-2 text-sm hover:bg-secondary">{i.title}</Link></li>)}
             </ul>

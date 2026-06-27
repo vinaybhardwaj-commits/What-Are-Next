@@ -18,20 +18,18 @@ export default async function StrategyPage() {
       ) : (
         <div className="space-y-3">
           {goals.map((g) => (
-            <Link key={g.id} href={`/n/goal/${g.id}`} className="block rounded-xl border bg-white p-4 hover:bg-secondary/40">
-              <div className="flex items-start justify-between gap-3">
-                <div className="min-w-0">
-                  <div className="font-medium text-even-navy">{g.title}</div>
-                  <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
-                    {g.targetHorizon && <span className="rounded bg-secondary px-1.5 py-0.5">{g.targetHorizon}</span>}
-                    {g.hasKernel ? <span>{g.coherentCount} coherent action{g.coherentCount !== 1 ? "s" : ""}</span> : <span className="italic">no kernel yet</span>}
-                    <span>· {g.linkedInitiativeCount} initiative{g.linkedInitiativeCount !== 1 ? "s" : ""} linked</span>
-                    {g.strategyWithoutExecution && <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-1.5 py-0.5 text-health-amber"><AlertTriangle className="h-3 w-3" />strategy without execution</span>}
-                  </div>
+            <div key={g.id} className="flex items-start justify-between gap-3 rounded-xl border bg-white p-4">
+              <Link href={`/n/goal/${g.id}`} className="min-w-0 flex-1 hover:opacity-80">
+                <div className="font-medium text-even-navy">{g.title}</div>
+                <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
+                  {g.targetHorizon && <span className="rounded bg-secondary px-1.5 py-0.5">{g.targetHorizon}</span>}
+                  {g.hasKernel ? <span>{g.coherentCount} coherent action{g.coherentCount !== 1 ? "s" : ""}</span> : <span className="italic">no kernel yet</span>}
+                  <span>· {g.linkedInitiativeCount} initiative{g.linkedInitiativeCount !== 1 ? "s" : ""} linked</span>
+                  {g.strategyWithoutExecution && <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-1.5 py-0.5 text-health-amber"><AlertTriangle className="h-3 w-3" />strategy without execution</span>}
                 </div>
-                <div onClick={(e) => e.preventDefault()}><GoalStatus id={g.id} status={g.status} /></div>
-              </div>
-            </Link>
+              </Link>
+              <GoalStatus id={g.id} status={g.status} />
+            </div>
           ))}
         </div>
       )}
