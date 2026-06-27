@@ -20,7 +20,7 @@ import {
   recolorDomain, archiveDomain, toggleDomainCollapse, createInitiative,
 } from "@/lib/actions";
 
-type Ini = { id: string; title: string; gtdStatus: string; actionCount: number; health: Health };
+type Ini = { id: string; title: string; gtdStatus: string; actionCount: number; health: Health; goalTitle?: string | null };
 type Dom = {
   id: string; name: string; color: string; collapsed: boolean; health: Health;
   guides: { id: string; name: string; color: string }[]; initiatives: Ini[];
@@ -175,9 +175,10 @@ function Card({ ini }: { ini: Ini }) {
           <span className="text-sm font-medium leading-snug text-even-navy">{ini.title}</span>
           <HealthDot health={ini.health} className="mt-1 shrink-0" />
         </div>
-        <div className="mt-2 flex items-center gap-2 text-[11px] text-muted-foreground">
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
           {ini.gtdStatus === "someday" && <span className="rounded bg-secondary px-1.5 py-0.5">someday</span>}
           {ini.actionCount > 0 && <span>{ini.actionCount} action{ini.actionCount > 1 ? "s" : ""}</span>}
+          {ini.goalTitle && <span className="inline-flex max-w-full items-center gap-0.5 truncate rounded bg-primary/10 px-1.5 py-0.5 text-primary" title={ini.goalTitle}>\u25CE {ini.goalTitle}</span>}
         </div>
       </Link>
     </div>

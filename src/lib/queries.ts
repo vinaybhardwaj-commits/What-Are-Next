@@ -1,18 +1,20 @@
 import "server-only";
 import { db } from "@/db";
-import { domains, initiatives, actions, people, tasks } from "@/db/schema";
+import { domains, initiatives, actions, people, tasks, goals } from "@/db/schema";
 import { and, asc, eq, isNull } from "drizzle-orm";
 
 export type Health = "green" | "amber" | "red";
 
 export async function getBoard() {
-  const [ds, allPeople, inis, allActions] = await Promise.all([
+  const [ds, allPeople, inis, allActions, allGoals] = await Promise.all([
     db.select().from(domains).where(isNull(domains.archivedAt)).orderBy(asc(domains.sortOrder)),
     db.select().from(people),
     db.select().from(initiatives).where(isNull(initiatives.archivedAt)).orderBy(asc(initiatives.sortOrder)),
     db.select({ initiativeId: actions.initiativeId, gtdStatus: actions.gtdStatus })
       .from(actions).where(isNull(actions.archivedAt)),
+    db.select({ id: goals.id, title: goals.title }).from(goals).where(isNull(goals.archivedAt)),
   ]);
+  const goalTitleById = new Map(allGoals.map((g) => [g.id, g.title]));
 
   const personById = new Map(allPeople.map((p) => [p.id, p]));
   const actCount = new Map<string, number>();
@@ -30,6 +32,7 @@ export async function getBoard() {
       title: i.title,
       gtdStatus: i.gtdStatus,
       goalId: i.goalId,
+      goalTitle: i.goalId ? (goalTitleById.get(i.goalId) || null) : null,
       actionCount: actCount.get(i.id) || 0,
       health: (i.gtdStatus === "someday" ? "amber" : "green") as Health,
     }));

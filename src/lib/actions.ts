@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps } from "@/db/schema";
+import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps, goals, strategyKernels, kernelActions } from "@/db/schema";
 import { and, asc, desc, eq, isNull, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -308,4 +308,63 @@ export async function setStepOwner(stepId: string, ownerPersonId: string | null,
 export async function removeStep(stepId: string, nodeType: string, nodeId: string) {
   await db.delete(processSteps).where(eq(processSteps.id, stepId));
   revalNode(nodeType, nodeId);
+}
+
+/* ============================ P4: strategy layer ============================ */
+
+function revalStrategy(goalId?: string) {
+  revalidatePath("/strategy"); revalidatePath("/");
+  if (goalId) revalidatePath(`/n/goal/${goalId}`);
+}
+
+export async function createGoal(title: string) {
+  const t = title.trim(); if (!t) return;
+  const [m] = await db.select({ v: max(goals.sortOrder) }).from(goals);
+  const [g] = await db.insert(goals).values({ title: t, status: "not_started", sortOrder: (m?.v ?? 0) + 1 }).returning();
+  await db.insert(strategyKernels).values({ goalId: g.id, guidingPrinciples: [] });
+  await log("goal", g.id, "created");
+  revalStrategy(g.id);
+  return g.id;
+}
+export async function updateGoal(id: string, patch: { title?: string; status?: any; targetHorizon?: string | null }) {
+  await db.update(goals).set({ ...patch, updatedAt: new Date() }).where(eq(goals.id, id));
+  revalStrategy(id);
+}
+
+export async function saveDiagnosis(kernelId: string, goalId: string, diagnosis: string) {
+  await db.update(strategyKernels).set({ diagnosis, updatedAt: new Date() }).where(eq(strategyKernels.id, kernelId));
+  revalStrategy(goalId);
+}
+export async function setGuidingPrinciples(kernelId: string, goalId: string, principles: string[]) {
+  await db.update(strategyKernels).set({ guidingPrinciples: principles, updatedAt: new Date() }).where(eq(strategyKernels.id, kernelId));
+  revalStrategy(goalId);
+}
+
+export async function addCoherentAction(kernelId: string, goalId: string, text: string) {
+  const t = text.trim(); if (!t) return;
+  const [m] = await db.select({ v: max(kernelActions.sortOrder) }).from(kernelActions).where(eq(kernelActions.kernelId, kernelId));
+  await db.insert(kernelActions).values({ kernelId, text: t, sortOrder: (m?.v ?? 0) + 1 });
+  revalStrategy(goalId);
+}
+export async function updateCoherentAction(id: string, goalId: string, text: string) {
+  await db.update(kernelActions).set({ text }).where(eq(kernelActions.id, id));
+  revalStrategy(goalId);
+}
+export async function linkCoherentAction(id: string, goalId: string, initiativeId: string | null) {
+  await db.update(kernelActions).set({
+    linkedNodeType: initiativeId ? "initiative" : null,
+    linkedNodeId: initiativeId,
+  }).where(eq(kernelActions.id, id));
+  revalStrategy(goalId);
+}
+export async function removeCoherentAction(id: string, goalId: string) {
+  await db.delete(kernelActions).where(eq(kernelActions.id, id));
+  revalStrategy(goalId);
+}
+
+export async function linkInitiativeToGoal(initiativeId: string, goalId: string | null) {
+  await db.update(initiatives).set({ goalId, updatedAt: new Date() }).where(eq(initiatives.id, initiativeId));
+  await log("initiative", initiativeId, goalId ? "linked-to-goal" : "unlinked-from-goal");
+  revalStrategy(goalId || undefined);
+  revalidatePath(`/n/initiative/${initiativeId}`);
 }

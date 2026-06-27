@@ -2,10 +2,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Inbox, ListChecks, Users, RefreshCw, Sparkles } from "lucide-react";
+import { Home, Inbox, ListChecks, Users, RefreshCw, Sparkles, Target } from "lucide-react";
 
 const nav = [
   { href: "/", label: "Home", icon: Home },
+  { href: "/strategy", label: "Strategy", icon: Target },
   { href: "/inbox", label: "Inbox", icon: Inbox },
   { href: "/gtd", label: "GTD Lists", icon: ListChecks },
   { href: "/people", label: "People", icon: Users },

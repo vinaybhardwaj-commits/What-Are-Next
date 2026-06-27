@@ -3,6 +3,11 @@ import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getInitiative, getAction } from "@/lib/queries";
 import { getTaskDetail } from "@/lib/gtd";
+import { getGoalDetail, getGoals } from "@/lib/strategy";
+import { KernelEditor } from "@/components/kernel-editor";
+import { GoalStatus } from "@/components/goal-status";
+import { GoalHorizon } from "@/components/goal-horizon";
+import { InitiativeGoalLinker } from "@/components/initiative-goal-linker";
 import { NotesEditor } from "@/components/notes-editor";
 import { TaskList } from "@/components/task-list";
 import { AddAction } from "@/components/add-action";
@@ -23,6 +28,39 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default async function NodePage({ params }: { params: { type: string; id: string } }) {
   const { type, id } = params;
+
+  if (type === "goal") {
+    const data = await getGoalDetail(id);
+    if (!data) notFound();
+    const { goal, kernel, coherent, linkedInitiatives, allInitiatives, guidingPrinciples } = data;
+    const swe = coherent.length > 0 && (coherent.some((c) => !c.linkedNodeId) || linkedInitiatives.length === 0);
+    return (
+      <div className="max-w-3xl p-6">
+        <Link href="/strategy" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> Strategy</Link>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="text-2xl font-semibold text-even-navy">{goal.title}</h1>
+          <GoalStatus id={goal.id} status={goal.status} />
+        </div>
+        <div className="mt-2 flex items-center gap-3">
+          <GoalHorizon id={goal.id} horizon={goal.targetHorizon} />
+          {swe && <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-2 py-0.5 text-xs text-health-amber">strategy without execution</span>}
+        </div>
+        <Section title="Strategy Kernel (Rumelt)">
+          <KernelEditor goalId={goal.id} kernelId={kernel.id} diagnosis={kernel.diagnosis} principles={guidingPrinciples}
+            coherent={coherent.map((c) => ({ id: c.id, text: c.text, linkedNodeId: c.linkedNodeId, linkedTitle: c.linkedTitle }))}
+            allInitiatives={allInitiatives.map((i) => ({ id: i.id, title: i.title }))} />
+        </Section>
+        <Section title={`Linked initiatives (${linkedInitiatives.length})`}>
+          {linkedInitiatives.length === 0 ? <p className="text-sm text-muted-foreground">No initiatives linked yet. Link them from an initiative\u2019s page or via a coherent action above.</p> : (
+            <ul className="space-y-2">
+              {linkedInitiatives.map((i) => <li key={i.id}><Link href={`/n/initiative/${i.id}`} className="block rounded-lg border bg-white px-3 py-2 text-sm hover:bg-secondary">{i.title}</Link></li>)}
+            </ul>
+          )}
+        </Section>
+        <NodePayload nodeType="goal" nodeId={id} />
+      </div>
+    );
+  }
 
   if (type === "task") {
     const data = await getTaskDetail(id);
@@ -56,7 +94,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
   }
 
   if (type === "initiative") {
-    const data = await getInitiative(id);
+    const [data, goalsList] = await Promise.all([getInitiative(id), getGoals()]);
     if (!data) notFound();
     const { initiative, domain, actions } = data;
     return (
@@ -67,6 +105,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
           {initiative.gtdStatus === "someday" && <span className="rounded bg-secondary px-1.5 py-0.5">someday</span>}
         </div>
         <h1 className="mt-2 text-2xl font-semibold text-even-navy">{initiative.title}</h1>
+        <div className="mt-3"><InitiativeGoalLinker initiativeId={id} goalId={initiative.goalId} goals={goalsList.map((g) => ({ id: g.id, title: g.title }))} /></div>
         <Section title="Notes"><NotesEditor nodeType="initiative" id={id} initial={initiative.notes ?? ""} /></Section>
         <Section title={`Actions (${actions.length})`}>
           <ul className="space-y-2">
