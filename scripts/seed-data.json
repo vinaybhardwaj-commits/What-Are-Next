@@ -1,0 +1,80 @@
+{
+  "period": "July-Sept 2026",
+  "people": ["Ira","Vanshika","Adi","Animesh","Pradnyeel","Chandrika","Shilpa","Ankita","Binita","Mohsin","Sandhya"],
+  "domains": [
+    {
+      "name": "Tech", "color": "#0055FF", "guides": ["Ira","Vanshika","Adi"],
+      "initiatives": [
+        { "title": "Pulse 2", "gtdStatus": "next", "actions": [
+          { "title": "Text / Context Based Dictation to Pulse", "sequence": 1 },
+          { "title": "Single Click Disposition of Low Complexity OPD Encounters", "sequence": 2 },
+          { "title": "LLM-Fixed, Database Matched physician search to Investigations, Drugs, Diagnosis", "sequence": 3 },
+          { "title": "Unstructured Audio Encounter Capture and analysis", "sequence": 4 },
+          { "title": "CDS Audit of OPD Encounter Data", "sequence": 5 }
+        ]},
+        { "title": "Scribe", "gtdStatus": "next", "actions": [
+          { "title": "Expand testing Population, .95CI in Translation & Notemaking", "sequence": 1 },
+          { "title": "Encounter Pathway Nudge instead of Live Transcript", "sequence": 2 }
+        ]},
+        { "title": "KX", "gtdStatus": "someday", "actions": [
+          { "title": "MRD Pipeline rework (Scanning > LLM Parse > Nomic Embedding)", "gtdStatus": "someday", "notes": "Wishlist" },
+          { "title": "Patient EMR Redesign", "gtdStatus": "someday", "notes": "Wishlist" },
+          { "title": "Opex Tracking / 3rd Party Integration", "gtdStatus": "someday", "notes": "Wishlist" }
+        ]},
+        { "title": "CDMSS", "gtdStatus": "next", "actions": [
+          { "title": "Expand Database, Pipeline Optimisation, Testing with Mohsin & EHRC Docs" }
+        ]}
+      ]
+    },
+    {
+      "name": "Ops", "color": "#F96EB1", "guides": ["Animesh","Pradnyeel"],
+      "initiatives": [
+        { "title": "Daily Dash", "actions": [] },
+        { "title": "BRM", "actions": [] },
+        { "title": "FMS Tracker", "actions": [] },
+        { "title": "HK Tracker", "actions": [] },
+        { "title": "Sewa", "actions": [] },
+        { "title": "Appraisal / HR", "actions": [] }
+      ]
+    },
+    {
+      "name": "Clinical Gov", "color": "#002054", "guides": ["Chandrika","Shilpa","Ankita"],
+      "initiatives": [
+        { "title": "Governance.evenos.app", "actions": [
+          { "title": "Wire FPPE and OPPE to Site Medical Admin and selected physicians, polling should be done in Daily Dash and Doctor Portal" },
+          { "title": "Add Score Card metrics derived from Clinical Qual in DRDB view" },
+          { "title": "Surgical Gov: Add Case by Case queries to OT Coordinator, ICN, Nursing forms" }
+        ]},
+        { "title": "OT Black Box", "actions": [
+          { "title": "Wire One OT for Sound, Consolidate all signals (Video, Monitors, Sound)" },
+          { "title": "Organize Sigint, OT Notes, Post Op Notes into Auditable Case" },
+          { "title": "Live Stream Sigint/case to surgeons/anaesthetists." },
+          { "title": "Use Operative site video to derive Procedure notes and timeline" }
+        ]},
+        { "title": "Physician Handover Monitoring", "actions": [
+          { "title": "Cron Job template > Compare Frequency" },
+          { "title": "Process Handovers and add to Daily Dash Intelligence" }
+        ]},
+        { "title": "MedAudit Tool (Clinical Pharm)", "actions": [
+          { "title": "Testing & Verification of RXLabguard API" },
+          { "title": "Develop Antibiogram engine (Ingest PDFs > Database > Antibiogram formulation)" }
+        ]},
+        { "title": "MRD Overhaul", "actions": [
+          { "title": "Restructure MRD data for Analysis: Does it go into MB? Where does it go", "notes": "?? open question carried from the sheet" }
+        ]}
+      ]
+    },
+    {
+      "name": "Clinical Qual", "color": "#16A34A", "guides": ["Binita","Mohsin","Vanshika","Adi","Sandhya"],
+      "initiatives": [
+        { "title": "Surgical data Pipeline", "actions": [
+          { "title": "Liberate OPD Notes from Pulse and Match them to Surgical Bookings & OT Notes" },
+          { "title": "Evaluate pathway for appropriateness & Outcomes with Mohsin's team." }
+        ]},
+        { "title": "Physician Score Card", "actions": [
+          { "title": "Metrics from Physician dashboard" }
+        ]}
+      ]
+    }
+  ]
+}
