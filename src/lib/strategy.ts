@@ -24,7 +24,7 @@ export async function getGoals() {
     const unlinkedActions = coherent.filter((a) => !a.linkedNodeId).length;
     // "strategy without execution": coherent actions exist but some don't link to a real node,
     // or the goal has no linked initiatives at all.
-    const strategyWithoutExecution = hasKernel && coherent.length > 0 && (unlinkedActions > 0 || linkedInitiatives.length === 0);
+    const strategyWithoutExecution = hasKernel && coherent.length > 0 && unlinkedActions > 0;
     return {
       id: g.id, title: g.title, status: g.status as GoalStatus, targetHorizon: g.targetHorizon,
       diagnosis: kernel?.diagnosis ?? null,

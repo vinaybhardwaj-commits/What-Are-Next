@@ -33,7 +33,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     const data = await getGoalDetail(id);
     if (!data) notFound();
     const { goal, kernel, coherent, linkedInitiatives, allInitiatives, guidingPrinciples } = data;
-    const swe = coherent.length > 0 && (coherent.some((c) => !c.linkedNodeId) || linkedInitiatives.length === 0);
+    const swe = coherent.length > 0 && coherent.some((c) => !c.linkedNodeId);
     return (
       <div className="max-w-3xl p-6">
         <Link href="/strategy" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> Strategy</Link>
