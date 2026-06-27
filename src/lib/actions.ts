@@ -1,7 +1,7 @@
 "use server";
 import { db } from "@/db";
-import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps, goals, strategyKernels, kernelActions } from "@/db/schema";
-import { and, asc, desc, eq, isNull, max } from "drizzle-orm";
+import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps, goals, strategyKernels, kernelActions, people } from "@/db/schema";
+import { and, asc, desc, eq, isNull, max , sql } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
 async function log(nodeType: any, nodeId: string, event: string, note?: string) {
@@ -367,4 +367,23 @@ export async function linkInitiativeToGoal(initiativeId: string, goalId: string 
   await log("initiative", initiativeId, goalId ? "linked-to-goal" : "unlinked-from-goal");
   revalStrategy(goalId || undefined);
   revalidatePath(`/n/initiative/${initiativeId}`);
+}
+
+/* ============================ People roster management ============================ */
+const PERSON_COLORS = ["#0055FF","#002054","#F96EB1","#16A34A","#F59E0B","#7C3AED","#0891B2","#DC2626","#DB2777","#0D9488","#CA8A04","#2563EB"];
+
+export async function createPerson(name: string, role?: string, team?: string) {
+  const n = name.trim(); if (!n) return;
+  const [{ c }] = await db.select({ c: sql<number>`count(*)::int` }).from(people);
+  const color = PERSON_COLORS[(c ?? 0) % PERSON_COLORS.length];
+  await db.insert(people).values({ name: n, role: role?.trim() || null, team: team?.trim() || null, avatarColor: color });
+  revalidatePath("/people"); revalidatePath("/");
+}
+export async function updatePerson(id: string, patch: { name?: string; role?: string | null; team?: string | null }) {
+  await db.update(people).set(patch).where(eq(people.id, id));
+  revalidatePath("/people");
+}
+export async function archivePerson(id: string) {
+  await db.update(people).set({ archivedAt: new Date() }).where(eq(people.id, id));
+  revalidatePath("/people"); revalidatePath("/");
 }

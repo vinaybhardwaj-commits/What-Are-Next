@@ -96,14 +96,14 @@ export async function getClarifyTargets() {
   const [inis, ppl] = await Promise.all([
     db.select({ id: initiatives.id, title: initiatives.title, domainId: initiatives.domainId })
       .from(initiatives).where(isNull(initiatives.archivedAt)).orderBy(asc(initiatives.sortOrder)),
-    db.select().from(people).orderBy(asc(people.name)),
+    db.select().from(people).where(isNull(people.archivedAt)).orderBy(asc(people.name)),
   ]);
   return { initiatives: inis, people: ppl };
 }
 
 export async function getPeopleFollowups() {
   const all = await getEnrichedTasks();
-  const ppl = await db.select().from(people).orderBy(asc(people.name));
+  const ppl = await db.select().from(people).where(isNull(people.archivedAt)).orderBy(asc(people.name));
   return ppl.map((p) => ({
     person: p,
     waitingOn: all.filter((t) => t.waitingOn?.id === p.id && t.gtdStatus === "waiting"),
@@ -115,9 +115,13 @@ export async function getTaskDetail(id: string) {
   const [t] = await db.select().from(tasks).where(eq(tasks.id, id));
   if (!t) return null;
   const [ppl, deps, log] = await Promise.all([
-    db.select().from(people).orderBy(asc(people.name)),
+    db.select().from(people).where(isNull(people.archivedAt)).orderBy(asc(people.name)),
     db.select().from(dependencies).where(and(eq(dependencies.dependentNodeType, "task"), eq(dependencies.dependentNodeId, id))).orderBy(desc(dependencies.createdAt)),
     db.select().from(activityLog).where(and(eq(activityLog.nodeType, "task"), eq(activityLog.nodeId, id))).orderBy(desc(activityLog.at)),
   ]);
   return { task: t, people: ppl, dependencies: deps, log };
+}
+
+export async function getRoster() {
+  return db.select().from(people).where(isNull(people.archivedAt)).orderBy(asc(people.name));
 }

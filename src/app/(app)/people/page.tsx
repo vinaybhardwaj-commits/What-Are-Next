@@ -1,19 +1,21 @@
-import { getPeopleFollowups } from "@/lib/gtd";
+import { getPeopleFollowups, getRoster } from "@/lib/gtd";
 import { TaskRow } from "@/components/task-row";
 import { Avatar } from "@/components/avatars";
+import { PeopleManager } from "@/components/people-manager";
 
 export const dynamic = "force-dynamic";
 
 export default async function PeoplePage() {
-  const rows = await getPeopleFollowups();
+  const [rows, roster] = await Promise.all([getPeopleFollowups(), getRoster()]);
   const persons = rows.map((r) => ({ id: r.person.id, name: r.person.name, color: r.person.avatarColor }));
   const active = rows.filter((r) => r.waitingOn.length + r.assigned.length > 0);
   return (
     <div className="max-w-3xl p-6">
       <h1 className="text-xl font-semibold text-even-navy">People</h1>
-      <p className="mb-5 text-sm text-muted-foreground">Who you're waiting on and what you've delegated. Your follow-up surface.</p>
+      <p className="mb-5 text-sm text-muted-foreground">Your colleagues — add or remove anyone here, then delegate to or wait on them from any task. Below: who you're waiting on and what you've delegated.</p>
+      <PeopleManager people={roster.map((p) => ({ id: p.id, name: p.name, role: p.role, color: p.avatarColor }))} />
       {active.length === 0 ? (
-        <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">No open waiting-ons or delegations yet. Set "waiting on" from any task.</div>
+        <div className="rounded-xl border border-dashed p-6 text-sm text-muted-foreground">No open waiting-ons or delegations yet. Set &quot;waiting on&quot; or &quot;delegate to&quot; from any task.</div>
       ) : (
         <div className="space-y-5">
           {active.map((r) => (

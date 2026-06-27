@@ -1,4 +1,5 @@
 import { db } from "@/db";
+import { isNull } from "drizzle-orm";
 import { people } from "@/db/schema";
 import { getEnrichedTasks, bucketize } from "@/lib/gtd";
 import { GtdLists } from "@/components/gtd-lists";
@@ -6,7 +7,7 @@ import { GtdLists } from "@/components/gtd-lists";
 export const dynamic = "force-dynamic";
 
 export default async function GtdPage() {
-  const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people)]);
+  const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people).where(isNull(people.archivedAt))]);
   const b = bucketize(all);
   const inBucket = (id: string) => {
     const ks: string[] = [];

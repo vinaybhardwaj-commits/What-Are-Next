@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { isNull } from "drizzle-orm";
 import { db } from "@/db";
 import { people } from "@/db/schema";
 import { getEnrichedTasks, bucketize } from "@/lib/gtd";
@@ -6,7 +7,7 @@ import { TaskRow } from "@/components/task-row";
 import { DailyBrief } from "@/components/daily-brief";
 
 export async function TodayRail() {
-  const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people)]);
+  const [all, ppl] = await Promise.all([getEnrichedTasks(), db.select().from(people).where(isNull(people.archivedAt))]);
   const b = bucketize(all);
   const persons = ppl.map((p) => ({ id: p.id, name: p.name, color: p.avatarColor }));
 
