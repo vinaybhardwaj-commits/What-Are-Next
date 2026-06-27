@@ -26,3 +26,5 @@ export async function POST(request: Request): Promise<NextResponse> {
     return NextResponse.json({ error: (error as Error).message }, { status: 400 });
   }
 }
+
+// blob store connected 27 Jun 2026
