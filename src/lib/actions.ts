@@ -1,6 +1,6 @@
 "use server";
 import { db } from "@/db";
-import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems } from "@/db/schema";
+import { domains, initiatives, actions, tasks, activityLog, dependencies, inboxItems, artefacts, projectLinks, processes, processSteps } from "@/db/schema";
 import { and, asc, desc, eq, isNull, max } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 
@@ -232,4 +232,80 @@ export async function quickTask(initiativeId: string | null, title: string) {
 export async function setDue(id: string, dueDate: string | null) {
   await db.update(tasks).set({ dueDate: dueDate ? new Date(dueDate) : null, updatedAt: new Date() }).where(eq(tasks.id, id));
   revalGtd(); revalidatePath(`/n/task/${id}`);
+}
+
+/* ============================ P3: versatile node payload ============================ */
+
+function revalNode(nodeType: string, nodeId: string) { revalidatePath(`/n/${nodeType}/${nodeId}`); }
+
+/* ---- artefacts (Vercel Blob metadata) ---- */
+export async function recordArtefact(nodeType: any, nodeId: string, blobUrl: string, label: string, contentType?: string, sizeBytes?: number) {
+  await db.insert(artefacts).values({ nodeType, nodeId, blobUrl, label, contentType: contentType || null, sizeBytes: sizeBytes ?? null });
+  await log(nodeType, nodeId, "artefact-added", label);
+  revalNode(nodeType, nodeId);
+}
+export async function removeArtefact(id: string, nodeType: string, nodeId: string) {
+  await db.delete(artefacts).where(eq(artefacts.id, id));
+  revalNode(nodeType, nodeId);
+}
+
+/* ---- project links + best-effort preview ---- */
+async function fetchPreview(url: string): Promise<Record<string, unknown> | null> {
+  try {
+    const res = await fetch(url, { headers: { "user-agent": "Mozilla/5.0 WhatAreNextBot" }, signal: AbortSignal.timeout(6000) });
+    const html = await res.text();
+    const pick = (re: RegExp) => html.match(re)?.[1]?.trim();
+    const title = pick(/<meta[^>]+property=["']og:title["'][^>]+content=["']([^"']+)["']/i)
+      || pick(/<meta[^>]+name=["']twitter:title["'][^>]+content=["']([^"']+)["']/i)
+      || pick(/<title[^>]*>([^<]+)<\/title>/i);
+    const desc = pick(/<meta[^>]+property=["']og:description["'][^>]+content=["']([^"']+)["']/i)
+      || pick(/<meta[^>]+name=["']description["'][^>]+content=["']([^"']+)["']/i);
+    const image = pick(/<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["']/i);
+    const site = (() => { try { return new URL(url).hostname.replace(/^www\./, ""); } catch { return null; } })();
+    return { title: title || null, description: desc || null, image: image || null, site };
+  } catch { return null; }
+}
+
+export async function addProjectLink(nodeType: any, nodeId: string, url: string, type: any) {
+  const u = url.trim(); if (!u) return;
+  const preview = await fetchPreview(u);
+  const [m] = await db.select({ v: max(projectLinks.sortOrder) }).from(projectLinks).where(and(eq(projectLinks.nodeType, nodeType), eq(projectLinks.nodeId, nodeId)));
+  await db.insert(projectLinks).values({
+    nodeType, nodeId, url: u, type, title: (preview?.title as string) || null,
+    previewJson: preview || null, sortOrder: (m?.v ?? 0) + 1,
+  });
+  await log(nodeType, nodeId, "link-added", type);
+  revalNode(nodeType, nodeId);
+}
+export async function removeProjectLink(id: string, nodeType: string, nodeId: string) {
+  await db.delete(projectLinks).where(eq(projectLinks.id, id));
+  revalNode(nodeType, nodeId);
+}
+
+/* ---- process / SOP ---- */
+export async function createProcess(nodeType: any, nodeId: string, title: string) {
+  const t = title.trim(); if (!t) return;
+  const [m] = await db.select({ v: max(processes.sortOrder) }).from(processes).where(and(eq(processes.nodeType, nodeType), eq(processes.nodeId, nodeId)));
+  await db.insert(processes).values({ nodeType, nodeId, title: t, sortOrder: (m?.v ?? 0) + 1 });
+  await log(nodeType, nodeId, "process-created", t);
+  revalNode(nodeType, nodeId);
+}
+export async function addProcessStep(processId: string, text: string, nodeType: string, nodeId: string) {
+  const t = text.trim(); if (!t) return;
+  const existing = await db.select({ n: processSteps.stepNo }).from(processSteps).where(eq(processSteps.processId, processId));
+  const nextNo = existing.reduce((mx, r) => Math.max(mx, r.n), 0) + 1;
+  await db.insert(processSteps).values({ processId, stepNo: nextNo, text: t, status: "pending" });
+  revalNode(nodeType, nodeId);
+}
+export async function setStepStatus(stepId: string, status: any, nodeType: string, nodeId: string) {
+  await db.update(processSteps).set({ status }).where(eq(processSteps.id, stepId));
+  revalNode(nodeType, nodeId);
+}
+export async function setStepOwner(stepId: string, ownerPersonId: string | null, nodeType: string, nodeId: string) {
+  await db.update(processSteps).set({ ownerPersonId }).where(eq(processSteps.id, stepId));
+  revalNode(nodeType, nodeId);
+}
+export async function removeStep(stepId: string, nodeType: string, nodeId: string) {
+  await db.delete(processSteps).where(eq(processSteps.id, stepId));
+  revalNode(nodeType, nodeId);
 }

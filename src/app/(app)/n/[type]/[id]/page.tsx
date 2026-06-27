@@ -8,6 +8,7 @@ import { TaskList } from "@/components/task-list";
 import { AddAction } from "@/components/add-action";
 import { TaskDetail } from "@/components/task-detail";
 import { HealthDot } from "@/components/health-dot";
+import { NodePayload } from "@/components/node-payload";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
         <Link href="/gtd" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> GTD Lists</Link>
         <h1 className="mt-1 text-2xl font-semibold text-even-navy">{task.title}</h1>
         <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} /></div>
+        <NodePayload nodeType="task" nodeId={id} />
         {log.length > 0 && (
           <Section title="History">
             <ul className="space-y-1 text-xs text-muted-foreground">
@@ -82,6 +84,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
           </ul>
           <AddAction initiativeId={id} />
         </Section>
+        <NodePayload nodeType="initiative" nodeId={id} />
       </div>
     );
   }
@@ -96,6 +99,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
         <h1 className="mt-1 text-2xl font-semibold text-even-navy">{action.title}</h1>
         <Section title="Notes"><NotesEditor nodeType="action" id={id} initial={action.notes ?? ""} /></Section>
         <Section title={`Tasks (${tasks.length})`}><TaskList actionId={id} tasks={tasks.map((t) => ({ id: t.id, title: t.title, gtdStatus: t.gtdStatus }))} /></Section>
+        <NodePayload nodeType="action" nodeId={id} />
       </div>
     );
   }
