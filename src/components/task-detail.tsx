@@ -35,22 +35,22 @@ export function TaskDetail({ task, people, deps }: { task: Task; people: P[]; de
     <div className="space-y-6">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
         <Field label="Status">
-          <select className={sel} defaultValue={task.gtdStatus} onChange={(e) => start(() => setGtdStatus(task.id, e.target.value as any))}>
+          <select className={sel} value={task.gtdStatus} onChange={(e) => start(() => setGtdStatus(task.id, e.target.value as any))}>
             {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
           </select>
         </Field>
         <Field label="Delegate to">
-          <select className={sel} defaultValue={task.assigneePersonId ?? ""} onChange={(e) => start(() => setAssignee(task.id, e.target.value || null))}>
+          <select className={sel} value={task.assigneePersonId ?? ""} onChange={(e) => start(() => setAssignee(task.id, e.target.value || null))}>
             <option value="">— none —</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </Field>
         <Field label="Waiting on">
-          <select className={sel} defaultValue={task.waitingOnPersonId ?? ""} onChange={(e) => start(() => setWaitingOn(task.id, e.target.value || null))}>
+          <select className={sel} value={task.waitingOnPersonId ?? ""} onChange={(e) => start(() => setWaitingOn(task.id, e.target.value || null))}>
             <option value="">— no one —</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
           </select>
         </Field>
         <Field label="Priority">
-          <select className={sel} defaultValue={task.priority ?? ""} onChange={(e) => start(() => setPriority(task.id, e.target.value ? Number(e.target.value) : null))}>
+          <select className={sel} value={task.priority ?? ""} onChange={(e) => start(() => setPriority(task.id, e.target.value ? Number(e.target.value) : null))}>
             <option value="">—</option><option value="1">1 (high)</option><option value="2">2</option><option value="3">3</option>
           </select>
         </Field>
