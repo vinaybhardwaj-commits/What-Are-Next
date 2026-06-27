@@ -2,9 +2,11 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ChevronLeft } from "lucide-react";
 import { getInitiative, getAction } from "@/lib/queries";
+import { getTaskDetail } from "@/lib/gtd";
 import { NotesEditor } from "@/components/notes-editor";
 import { TaskList } from "@/components/task-list";
 import { AddAction } from "@/components/add-action";
+import { TaskDetail } from "@/components/task-detail";
 import { HealthDot } from "@/components/health-dot";
 
 export const dynamic = "force-dynamic";
@@ -20,6 +22,36 @@ function Section({ title, children }: { title: string; children: React.ReactNode
 
 export default async function NodePage({ params }: { params: { type: string; id: string } }) {
   const { type, id } = params;
+
+  if (type === "task") {
+    const data = await getTaskDetail(id);
+    if (!data) notFound();
+    const { task, people, dependencies, log } = data;
+    const t = {
+      id: task.id, title: task.title, notes: task.notes, gtdStatus: task.gtdStatus,
+      contexts: task.contexts ?? [], priority: task.priority,
+      assigneePersonId: task.assigneePersonId, waitingOnPersonId: task.waitingOnPersonId,
+      dueDate: task.dueDate ? new Date(task.dueDate).toISOString() : null,
+      deferUntil: task.deferUntil ? new Date(task.deferUntil).toISOString() : null,
+      completionNote: task.completionNote,
+    };
+    const persons = people.map((p) => ({ id: p.id, name: p.name, color: p.avatarColor }));
+    const deps = dependencies.map((d) => ({ id: d.id, state: d.state, externalLabel: d.externalLabel, resolutionNote: d.resolutionNote, blockerNodeType: d.blockerNodeType }));
+    return (
+      <div className="max-w-3xl p-6">
+        <Link href="/gtd" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> GTD Lists</Link>
+        <h1 className="mt-1 text-2xl font-semibold text-even-navy">{task.title}</h1>
+        <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} /></div>
+        {log.length > 0 && (
+          <Section title="History">
+            <ul className="space-y-1 text-xs text-muted-foreground">
+              {log.map((l) => <li key={l.id}><span className="font-medium text-foreground">{l.event}</span>{l.note ? ` — ${l.note}` : ""} · {new Date(l.at).toLocaleString()}</li>)}
+            </ul>
+          </Section>
+        )}
+      </div>
+    );
+  }
 
   if (type === "initiative") {
     const data = await getInitiative(id);

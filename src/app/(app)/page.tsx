@@ -7,8 +7,8 @@ export const dynamic = "force-dynamic";
 export default async function HomePage() {
   const board = await getBoard();
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[1fr_340px]">
-      <section className="min-w-0 p-6">
+    <div className="flex">
+      <section className="min-w-0 flex-1 p-6">
         <header className="mb-5">
           <h1 className="text-xl font-semibold text-even-navy">Strategy Map</h1>
           <p className="text-sm text-muted-foreground">
@@ -17,7 +17,7 @@ export default async function HomePage() {
         </header>
         <StrategyMap board={board} />
       </section>
-      <TodayRail board={board} />
+      <TodayRail />
     </div>
   );
 }
