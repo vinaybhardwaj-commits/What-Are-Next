@@ -16,6 +16,7 @@ import { AddAction } from "@/components/add-action";
 import { TaskDetail } from "@/components/task-detail";
 import { HealthDot } from "@/components/health-dot";
 import { NodePayload } from "@/components/node-payload";
+import { EditableTitle } from "@/components/editable-title";
 
 export const dynamic = "force-dynamic";
 
@@ -40,7 +41,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
       <div className="max-w-3xl p-6">
         <Link href="/strategy" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> Strategy</Link>
         <div className="flex items-start justify-between gap-3">
-          <h1 className="text-2xl font-semibold text-even-navy">{goal.title}</h1>
+          <div className="min-w-0 flex-1"><EditableTitle kind="goal" id={goal.id} value={goal.title} /></div>
           <GoalStatus id={goal.id} status={goal.status} />
         </div>
         <div className="mt-2 flex items-center gap-3">
@@ -82,7 +83,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     return (
       <div className="max-w-3xl p-6">
         <Link href="/gtd" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> GTD Lists</Link>
-        <h1 className="mt-1 text-2xl font-semibold text-even-navy">{task.title}</h1>
+        <div className="mt-1"><EditableTitle kind="task" id={id} value={task.title} /></div>
         <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} contexts={contexts} /></div>
         {task.waitingOnPersonId && <div className="mt-4"><NudgeDraft taskId={id} /></div>}
         <NodePayload nodeType="task" nodeId={id} />
@@ -108,7 +109,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
           {domain && <span className="rounded px-1.5 py-0.5" style={{ backgroundColor: (domain.color || "#0055FF") + "22", color: domain.color || undefined }}>{domain.name}</span>}
           {initiative.gtdStatus === "someday" && <span className="rounded bg-secondary px-1.5 py-0.5">someday</span>}
         </div>
-        <h1 className="mt-2 text-2xl font-semibold text-even-navy">{initiative.title}</h1>
+        <div className="mt-2"><EditableTitle kind="initiative" id={id} value={initiative.title} /></div>
         <div className="mt-3"><InitiativeGoalLinker initiativeId={id} goalId={initiative.goalId} goals={goalsList.map((g) => ({ id: g.id, title: g.title }))} /></div>
         <Section title="Notes"><NotesEditor nodeType="initiative" id={id} initial={initiative.notes ?? ""} /></Section>
         <Section title={`Actions (${actions.length})`}>
@@ -139,7 +140,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     return (
       <div className="max-w-3xl p-6">
         <Link href={initiative ? `/n/initiative/${initiative.id}` : "/"} className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> {initiative?.title ?? "Back"}</Link>
-        <h1 className="mt-1 text-2xl font-semibold text-even-navy">{action.title}</h1>
+        <div className="mt-1"><EditableTitle kind="action" id={id} value={action.title} /></div>
         <Section title="Notes"><NotesEditor nodeType="action" id={id} initial={action.notes ?? ""} /></Section>
         <Section title={`Tasks (${tasks.length})`}><TaskList actionId={id} tasks={tasks.map((t) => ({ id: t.id, title: t.title, gtdStatus: t.gtdStatus }))} /></Section>
         <NodePayload nodeType="action" nodeId={id} />

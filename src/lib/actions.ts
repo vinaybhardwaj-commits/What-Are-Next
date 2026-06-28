@@ -417,3 +417,14 @@ export async function removeContext(name: string) {
   await db.delete(tags).where(and(eq(tags.kind, "context"), eq(tags.name, name)));
   revalidatePath("/gtd"); revalidatePath("/inbox"); revalidatePath("/");
 }
+
+/* Rename any node's title (goal / initiative / action / task). */
+export async function renameNode(kind: "goal" | "initiative" | "action" | "task", id: string, title: string) {
+  const t = title.trim(); if (!t) return;
+  if (kind === "goal") await db.update(goals).set({ title: t, updatedAt: new Date() }).where(eq(goals.id, id));
+  else if (kind === "initiative") await db.update(initiatives).set({ title: t, updatedAt: new Date() }).where(eq(initiatives.id, id));
+  else if (kind === "action") await db.update(actions).set({ title: t, updatedAt: new Date() }).where(eq(actions.id, id));
+  else if (kind === "task") await db.update(tasks).set({ title: t, updatedAt: new Date() }).where(eq(tasks.id, id));
+  await log(kind, id, "renamed");
+  revalidatePath(`/n/${kind}/${id}`); revalidatePath("/"); revalidatePath("/strategy"); revalidatePath("/gtd");
+}

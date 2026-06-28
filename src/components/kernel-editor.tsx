@@ -1,9 +1,9 @@
 "use client";
 import { useState, useTransition } from "react";
-import { Plus, X, AlertTriangle, Link2 } from "lucide-react";
+import { Plus, X, AlertTriangle, Link2, Pencil, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  saveDiagnosis, setGuidingPrinciples, addCoherentAction, linkCoherentAction, removeCoherentAction,
+  saveDiagnosis, setGuidingPrinciples, addCoherentAction, linkCoherentAction, removeCoherentAction, updateCoherentAction,
 } from "@/lib/actions";
 
 type Ini = { id: string; title: string };
@@ -61,7 +61,7 @@ export function KernelEditor({ goalId, kernelId, diagnosis, principles, coherent
           {coherent.map((c) => (
             <li key={c.id} className="rounded-lg border bg-white px-3 py-2 text-sm">
               <div className="flex items-start gap-2">
-                <span className="flex-1">{c.text}</span>
+                <CoherentText id={c.id} goalId={goalId} value={c.text} />
                 <button onClick={() => start(() => removeCoherentAction(c.id, goalId))} className="text-muted-foreground hover:text-destructive"><X className="h-3.5 w-3.5" /></button>
               </div>
               <div className="mt-1.5 flex items-center gap-2">
@@ -82,5 +82,28 @@ export function KernelEditor({ goalId, kernelId, diagnosis, principles, coherent
         </form>
       </div>
     </div>
+  );
+}
+
+function CoherentText({ id, goalId, value }: { id: string; goalId: string; value: string }) {
+  const [editing, setEditing] = useState(false);
+  const [v, setV] = useState(value);
+  const [, start] = useTransition();
+  function save() { const next = v.trim() || value; setEditing(false); if (next !== value) start(() => updateCoherentAction(id, goalId, next)); }
+  if (editing) {
+    return (
+      <span className="flex flex-1 items-center gap-1">
+        <input value={v} onChange={(e) => setV(e.target.value)} autoFocus
+          onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") { setV(value); setEditing(false); } }}
+          className="flex-1 rounded border border-input px-1.5 py-0.5 text-sm outline-none focus:ring-2 focus:ring-ring" />
+        <button onClick={save} className="text-health-green"><Check className="h-3.5 w-3.5" /></button>
+      </span>
+    );
+  }
+  return (
+    <span className="group flex flex-1 items-center gap-1.5">
+      <span className="flex-1">{value}</span>
+      <button onClick={() => { setV(value); setEditing(true); }} className="text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:text-foreground"><Pencil className="h-3 w-3" /></button>
+    </span>
   );
 }
