@@ -52,6 +52,7 @@ export const goals = pgTable("goals", {
   notes: text("notes"),               // inlined markdown
   status: goalStatusEnum("status").default("not_started").notNull(),
   targetHorizon: text("target_horizon"), // e.g. "Q3 2026"
+  domainIds: uuid("domain_ids").array().default([]).notNull(), // domains this goal serves (a goal can span domains)
   sortOrder: doublePrecision("sort_order").default(0).notNull(),
   archivedAt: timestamp("archived_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),

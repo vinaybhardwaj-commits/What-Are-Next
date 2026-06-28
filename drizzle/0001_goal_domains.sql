@@ -1,0 +1,1 @@
+ALTER TABLE "goals" ADD COLUMN "domain_ids" uuid[] DEFAULT '{}' NOT NULL;

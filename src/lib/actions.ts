@@ -428,3 +428,19 @@ export async function renameNode(kind: "goal" | "initiative" | "action" | "task"
   await log(kind, id, "renamed");
   revalidatePath(`/n/${kind}/${id}`); revalidatePath("/"); revalidatePath("/strategy"); revalidatePath("/gtd");
 }
+
+/* ---- goal ↔ domain(s): a goal can be tagged with the domains it serves ---- */
+export async function setGoalDomains(goalId: string, domainIds: string[]) {
+  await db.update(goals).set({ domainIds, updatedAt: new Date() }).where(eq(goals.id, goalId));
+  revalStrategy(goalId);
+}
+
+/* ---- create a brand-new initiative straight from a kernel's coherent action ---- */
+export async function createInitiativeForKernel(coherentActionId: string, goalId: string, domainId: string, title: string) {
+  const t = title.trim(); if (!t || !domainId) return;
+  const [m] = await db.select({ v: max(initiatives.sortOrder) }).from(initiatives).where(eq(initiatives.domainId, domainId));
+  const [ini] = await db.insert(initiatives).values({ domainId, title: t, goalId, sortOrder: (m?.v ?? 0) + 1 }).returning();
+  await db.update(kernelActions).set({ linkedNodeType: "initiative", linkedNodeId: ini.id }).where(eq(kernelActions.id, coherentActionId));
+  await log("initiative", ini.id, "created-from-strategy");
+  revalStrategy(goalId); revalidatePath("/");
+}

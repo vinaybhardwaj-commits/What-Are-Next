@@ -5,6 +5,7 @@ import { getInitiative, getAction } from "@/lib/queries";
 import { getTaskDetail, getContexts } from "@/lib/gtd";
 import { getGoalDetail, getGoals } from "@/lib/strategy";
 import { KernelEditor } from "@/components/kernel-editor";
+import { GoalDomains } from "@/components/goal-domains";
 import { GoalStatus } from "@/components/goal-status";
 import { GoalHorizon } from "@/components/goal-horizon";
 import { InitiativeGoalLinker } from "@/components/initiative-goal-linker";
@@ -35,7 +36,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
   if (type === "goal") {
     const data = await getGoalDetail(id);
     if (!data) notFound();
-    const { goal, kernel, coherent, linkedInitiatives, allInitiatives, guidingPrinciples } = data;
+    const { goal, kernel, coherent, linkedInitiatives, allInitiatives, allDomains, guidingPrinciples } = data;
     const swe = coherent.length > 0 && coherent.some((c) => !c.linkedNodeId);
     return (
       <div className="max-w-3xl p-4 md:p-6">
@@ -48,10 +49,11 @@ export default async function NodePage({ params }: { params: { type: string; id:
           <GoalHorizon id={goal.id} horizon={goal.targetHorizon} />
           {swe && <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-2 py-0.5 text-xs text-health-amber">strategy without execution</span>}
         </div>
+        {allDomains.length > 0 && <div className="mt-3"><GoalDomains goalId={goal.id} allDomains={allDomains} selected={data.domainIds} /></div>}
         <Section title="Strategy Kernel (Rumelt)">
           <KernelEditor goalId={goal.id} kernelId={kernel.id} diagnosis={kernel.diagnosis} principles={guidingPrinciples}
             coherent={coherent.map((c) => ({ id: c.id, text: c.text, linkedNodeId: c.linkedNodeId, linkedTitle: c.linkedTitle }))}
-            allInitiatives={allInitiatives.map((i) => ({ id: i.id, title: i.title }))} />
+            allInitiatives={allInitiatives.map((i) => ({ id: i.id, title: i.title }))} domains={allDomains.map((d) => ({ id: d.id, name: d.name }))} />
           <div className="mt-4"><KernelCritique goalId={goal.id} /></div>
         </Section>
         <Section title={`Linked initiatives (${linkedInitiatives.length})`}>

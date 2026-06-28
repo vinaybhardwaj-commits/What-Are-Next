@@ -25,6 +25,7 @@ export default async function StrategyPage() {
                   {g.targetHorizon && <span className="rounded bg-secondary px-1.5 py-0.5">{g.targetHorizon}</span>}
                   {g.hasKernel ? <span>{g.coherentCount} coherent action{g.coherentCount !== 1 ? "s" : ""}</span> : <span className="italic">no kernel yet</span>}
                   <span>· {g.linkedInitiativeCount} initiative{g.linkedInitiativeCount !== 1 ? "s" : ""} linked</span>
+                  {g.domains.map((d) => <span key={d.id} className="inline-flex items-center gap-1 rounded px-1.5 py-0.5" style={{ backgroundColor: (d.color || "#2A6DFF") + "1f", color: "hsl(var(--foreground))" }}><span className="h-1.5 w-1.5 rounded-full" style={{ backgroundColor: d.color || "#2A6DFF" }} />{d.name}</span>)}
                   {g.strategyWithoutExecution && <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-1.5 py-0.5 text-health-amber"><AlertTriangle className="h-3 w-3" />strategy without execution</span>}
                 </div>
               </Link>

@@ -3,14 +3,15 @@ import { useState, useTransition } from "react";
 import { Plus, X, AlertTriangle, Link2, Pencil, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  saveDiagnosis, setGuidingPrinciples, addCoherentAction, linkCoherentAction, removeCoherentAction, updateCoherentAction,
+  saveDiagnosis, setGuidingPrinciples, addCoherentAction, linkCoherentAction, removeCoherentAction, updateCoherentAction, createInitiativeForKernel,
 } from "@/lib/actions";
 
 type Ini = { id: string; title: string };
+type Dom = { id: string; name: string };
 type CA = { id: string; text: string; linkedNodeId: string | null; linkedTitle: string | null };
 
-export function KernelEditor({ goalId, kernelId, diagnosis, principles, coherent, allInitiatives }: {
-  goalId: string; kernelId: string; diagnosis: string | null; principles: string[]; coherent: CA[]; allInitiatives: Ini[];
+export function KernelEditor({ goalId, kernelId, diagnosis, principles, coherent, allInitiatives, domains }: {
+  goalId: string; kernelId: string; diagnosis: string | null; principles: string[]; coherent: CA[]; allInitiatives: Ini[]; domains: Dom[];
 }) {
   const [, start] = useTransition();
   const [diag, setDiag] = useState(diagnosis ?? "");
@@ -64,15 +65,7 @@ export function KernelEditor({ goalId, kernelId, diagnosis, principles, coherent
                 <CoherentText id={c.id} goalId={goalId} value={c.text} />
                 <button onClick={() => start(() => removeCoherentAction(c.id, goalId))} className="text-muted-foreground hover:text-destructive"><X className="h-3.5 w-3.5" /></button>
               </div>
-              <div className="mt-1.5 flex items-center gap-2">
-                <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
-                <select value={c.linkedNodeId ?? ""} onChange={(e) => start(() => linkCoherentAction(c.id, goalId, e.target.value || null))}
-                  className="rounded border bg-card px-2 py-1 text-xs">
-                  <option value="">— link to initiative —</option>
-                  {allInitiatives.map((i) => <option key={i.id} value={i.id}>{i.title}</option>)}
-                </select>
-                {!c.linkedNodeId && <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-1.5 py-0.5 text-[11px] text-health-amber"><AlertTriangle className="h-3 w-3" />no execution</span>}
-              </div>
+              <CoherentLink c={c} goalId={goalId} allInitiatives={allInitiatives} domains={domains} />
             </li>
           ))}
         </ul>
@@ -105,5 +98,49 @@ function CoherentText({ id, goalId, value }: { id: string; goalId: string; value
       <span className="flex-1">{value}</span>
       <button onClick={() => { setV(value); setEditing(true); }} className="text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:text-foreground"><Pencil className="h-3 w-3" /></button>
     </span>
+  );
+}
+
+function CoherentLink({ c, goalId, allInitiatives, domains }: { c: CA; goalId: string; allInitiatives: Ini[]; domains: Dom[] }) {
+  const [, start] = useTransition();
+  const [creating, setCreating] = useState(false);
+  const [title, setTitle] = useState("");
+  const [domainId, setDomainId] = useState(domains[0]?.id ?? "");
+  if (creating) {
+    return (
+      <form
+        className="mt-1.5 flex flex-wrap items-center gap-2"
+        onSubmit={(e) => {
+          e.preventDefault();
+          const t = title.trim();
+          if (t && domainId) { start(() => createInitiativeForKernel(c.id, goalId, domainId, t)); setCreating(false); setTitle(""); }
+        }}
+      >
+        <Link2 className="h-3.5 w-3.5 text-primary" />
+        <input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="New initiative…"
+          className="h-7 w-44 rounded border border-input bg-card px-2 text-xs outline-none focus:ring-2 focus:ring-ring" />
+        <select value={domainId} onChange={(e) => setDomainId(e.target.value)} className="h-7 rounded border bg-card px-2 text-xs">
+          {domains.map((d) => <option key={d.id} value={d.id}>{d.name}</option>)}
+        </select>
+        <button className="rounded bg-primary px-2 py-1 text-[11px] font-medium text-primary-foreground">Create &amp; link</button>
+        <button type="button" onClick={() => { setCreating(false); setTitle(""); }} className="text-[11px] text-muted-foreground hover:text-foreground">cancel</button>
+      </form>
+    );
+  }
+  return (
+    <div className="mt-1.5 flex flex-wrap items-center gap-2">
+      <Link2 className="h-3.5 w-3.5 text-muted-foreground" />
+      <select value={c.linkedNodeId ?? ""} onChange={(e) => start(() => linkCoherentAction(c.id, goalId, e.target.value || null))}
+        className="rounded border bg-card px-2 py-1 text-xs">
+        <option value="">— link to initiative —</option>
+        {allInitiatives.map((i) => <option key={i.id} value={i.id}>{i.title}</option>)}
+      </select>
+      {!c.linkedNodeId && (
+        <>
+          <button onClick={() => setCreating(true)} className="inline-flex items-center gap-0.5 rounded border border-primary/40 px-1.5 py-0.5 text-[11px] text-primary hover:bg-primary/10"><Plus className="h-3 w-3" />new initiative</button>
+          <span className="inline-flex items-center gap-1 rounded bg-health-amber/15 px-1.5 py-0.5 text-[11px] text-health-amber"><AlertTriangle className="h-3 w-3" />no execution</span>
+        </>
+      )}
+    </div>
   );
 }

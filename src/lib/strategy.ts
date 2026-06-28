@@ -1,6 +1,6 @@
 import "server-only";
 import { db } from "@/db";
-import { goals, strategyKernels, kernelActions, initiatives } from "@/db/schema";
+import { goals, strategyKernels, kernelActions, initiatives, domains } from "@/db/schema";
 import { and, asc, eq, isNull } from "drizzle-orm";
 
 export type GoalStatus = "not_started" | "active" | "at_risk" | "done" | "dropped";
@@ -12,6 +12,8 @@ export async function getGoals() {
     db.select().from(kernelActions).orderBy(asc(kernelActions.sortOrder)),
     db.select({ id: initiatives.id, goalId: initiatives.goalId, title: initiatives.title }).from(initiatives).where(isNull(initiatives.archivedAt)),
   ]);
+  const allDoms = await db.select({ id: domains.id, name: domains.name, color: domains.color }).from(domains).where(isNull(domains.archivedAt));
+  const domById = new Map(allDoms.map((d) => [d.id, d]));
   const kernelByGoal = new Map(kernels.map((k) => [k.goalId, k]));
   const actionsByKernel = new Map<string, typeof kActions>();
   for (const a of kActions) { const arr = actionsByKernel.get(a.kernelId) || []; arr.push(a); actionsByKernel.set(a.kernelId, arr); }
@@ -32,6 +34,7 @@ export async function getGoals() {
       coherentCount: coherent.length, unlinkedActions,
       linkedInitiativeCount: linkedInitiatives.length,
       hasKernel, strategyWithoutExecution,
+      domains: ((g.domainIds as string[]) || []).map((id) => domById.get(id)).filter(Boolean) as { id: string; name: string; color: string }[],
     };
   });
 }
@@ -44,6 +47,7 @@ export async function getGoalDetail(id: string) {
   if (!kernel) {
     [kernel] = await db.insert(strategyKernels).values({ goalId: id, guidingPrinciples: [] }).returning();
   }
+  const allDomains = await db.select({ id: domains.id, name: domains.name, color: domains.color }).from(domains).where(isNull(domains.archivedAt)).orderBy(asc(domains.sortOrder));
   const [coherent, linkedInitiatives, allInitiatives] = await Promise.all([
     db.select().from(kernelActions).where(eq(kernelActions.kernelId, kernel.id)).orderBy(asc(kernelActions.sortOrder)),
     db.select({ id: initiatives.id, title: initiatives.title }).from(initiatives).where(and(eq(initiatives.goalId, id), isNull(initiatives.archivedAt))).orderBy(asc(initiatives.title)),
@@ -52,6 +56,8 @@ export async function getGoalDetail(id: string) {
   const iniTitle = new Map(allInitiatives.map((i) => [i.id, i.title]));
   return {
     goal: g,
+    domainIds: (g.domainIds as string[]) || [],
+    allDomains,
     kernel,
     coherent: coherent.map((c) => ({
       id: c.id, text: c.text, linkedNodeType: c.linkedNodeType, linkedNodeId: c.linkedNodeId,
