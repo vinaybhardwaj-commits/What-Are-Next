@@ -28,7 +28,7 @@ export function ClarifyRow({ item, initiatives, people, contexts: availableConte
   }
 
   return (
-    <div className="rounded-xl border bg-white p-4">
+    <div className="rounded-xl border bg-card p-4">
       <input value={title} onChange={(e) => setTitle(e.target.value)}
         className="w-full rounded-lg border border-input px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-ring" />
       {!open ? (
@@ -43,26 +43,26 @@ export function ClarifyRow({ item, initiatives, people, contexts: availableConte
           {reason && <div className="rounded bg-accent/10 px-2 py-1 text-xs text-accent-foreground"><span className="font-medium">AI:</span> {reason}</div>}
           <div className="grid grid-cols-2 gap-2">
             <label className="flex flex-col gap-1"><span className="text-xs text-muted-foreground">Initiative</span>
-              <select value={initiativeId} onChange={(e) => setInitiativeId(e.target.value)} className="rounded border bg-white px-2 py-1.5">
+              <select value={initiativeId} onChange={(e) => setInitiativeId(e.target.value)} className="rounded border bg-card px-2 py-1.5">
                 <option value="">— none —</option>
                 {initiatives.map((i) => <option key={i.id} value={i.id}>{i.title}</option>)}
               </select>
             </label>
             <label className="flex flex-col gap-1"><span className="text-xs text-muted-foreground">Waiting on</span>
-              <select value={waitingOn} onChange={(e) => setWaitingOn(e.target.value)} className="rounded border bg-white px-2 py-1.5">
+              <select value={waitingOn} onChange={(e) => setWaitingOn(e.target.value)} className="rounded border bg-card px-2 py-1.5">
                 <option value="">— no one —</option>
                 {people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
               </select>
             </label>
           </div>
           <label className="flex flex-col gap-1"><span className="text-xs text-muted-foreground">Due</span>
-            <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="w-44 rounded border bg-white px-2 py-1.5" />
+            <input type="date" value={due} onChange={(e) => setDue(e.target.value)} className="w-44 rounded border bg-card px-2 py-1.5" />
           </label>
           <div className="flex flex-wrap gap-1">
             {availableContexts.map((c) => {
               const on = contexts.includes(c);
               return <button key={c} type="button" onClick={() => setContexts(on ? contexts.filter((x) => x !== c) : [...contexts, c])}
-                className={on ? "rounded bg-primary px-1.5 py-0.5 text-xs text-primary-foreground" : "rounded border bg-white px-1.5 py-0.5 text-xs"}>{c}</button>;
+                className={on ? "rounded bg-primary px-1.5 py-0.5 text-xs text-primary-foreground" : "rounded border bg-card px-1.5 py-0.5 text-xs"}>{c}</button>;
             })}
           </div>
           <div className="flex gap-2 pt-1">

@@ -10,7 +10,7 @@ export function NotesEditor({ nodeType, id, initial }: { nodeType: "initiative" 
     <div>
       <textarea value={value} onChange={(e) => { setValue(e.target.value); setSaved(false); }}
         rows={6} placeholder="Notes (markdown)…"
-        className="w-full rounded-lg border border-input bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
+        className="w-full rounded-lg border border-input bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
       <div className="mt-2 flex items-center gap-3">
         <button onClick={() => start(async () => { await updateNotes(nodeType, id, value); setSaved(true); })}
           disabled={pending}

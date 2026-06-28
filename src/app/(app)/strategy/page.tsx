@@ -9,8 +9,8 @@ export const dynamic = "force-dynamic";
 export default async function StrategyPage() {
   const goals = await getGoals();
   return (
-    <div className="max-w-3xl p-6">
-      <h1 className="text-xl font-semibold text-even-navy">Strategy</h1>
+    <div className="max-w-3xl p-4 md:p-6">
+      <h1 className="text-xl font-semibold text-foreground">Strategy</h1>
       <p className="mb-5 text-sm text-muted-foreground">Quarter goals, each justified by a Rumelt kernel (diagnosis → guiding principles → coherent actions) that links down to real execution.</p>
       <CreateGoal />
       {goals.length === 0 ? (
@@ -18,9 +18,9 @@ export default async function StrategyPage() {
       ) : (
         <div className="space-y-3">
           {goals.map((g) => (
-            <div key={g.id} className="flex items-start justify-between gap-3 rounded-xl border bg-white p-4">
+            <div key={g.id} className="flex items-start justify-between gap-3 rounded-xl border bg-card p-4">
               <Link href={`/n/goal/${g.id}`} className="min-w-0 flex-1 hover:opacity-80">
-                <div className="font-medium text-even-navy">{g.title}</div>
+                <div className="font-medium text-foreground">{g.title}</div>
                 <div className="mt-1 flex flex-wrap items-center gap-2 text-[11px] text-muted-foreground">
                   {g.targetHorizon && <span className="rounded bg-secondary px-1.5 py-0.5">{g.targetHorizon}</span>}
                   {g.hasKernel ? <span>{g.coherentCount} coherent action{g.coherentCount !== 1 ? "s" : ""}</span> : <span className="italic">no kernel yet</span>}

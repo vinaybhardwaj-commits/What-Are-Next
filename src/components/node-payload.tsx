@@ -6,7 +6,7 @@ import { ProcessBlock } from "@/components/process-block";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-6">
-      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider font-mono text-muted-foreground">{title}</h2>
       {children}
     </section>
   );

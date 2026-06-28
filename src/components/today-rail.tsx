@@ -14,7 +14,7 @@ export async function TodayRail() {
   const Section = ({ title, items, tone }: { title: string; items: typeof b.next; tone?: string }) =>
     items.length === 0 ? null : (
       <div>
-        <div className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: tone }}>{title}<span className="text-muted-foreground">{items.length}</span></div>
+        <div className="mb-1.5 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider font-mono" style={{ color: tone }}>{title}<span className="text-muted-foreground">{items.length}</span></div>
         <div className="space-y-1.5">{items.slice(0, 8).map((t) => <TaskRow key={t.id} task={t} people={persons} contexts={contexts} />)}</div>
       </div>
     );
@@ -22,9 +22,9 @@ export async function TodayRail() {
   const empty = b.next.length + b.waiting.length + b.blocked.length + b.tickler.length === 0;
 
   return (
-    <aside className="w-[340px] shrink-0 overflow-y-auto border-l bg-white p-5">
+    <aside className="w-full shrink-0 border-t border-border bg-card/40 p-5 lg:w-[360px] lg:overflow-y-auto lg:border-l lg:border-t-0">
       <div className="mb-3 flex items-center justify-between">
-        <h2 className="text-lg font-semibold text-even-navy">Today</h2>
+        <h2 className="text-lg font-semibold text-foreground">Today</h2>
         <Link href="/gtd" className="text-xs text-primary hover:underline">All lists →</Link>
       </div>
       <DailyBrief />

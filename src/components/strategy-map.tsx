@@ -101,7 +101,7 @@ function Band({ dom, onLocalReorder }: { dom: Dom; onLocalReorder: (ids: string[
   return (
     <div ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn("overflow-hidden rounded-xl border bg-white", isDragging && "opacity-60 shadow-lg")}>
+      className={cn("overflow-hidden rounded-xl border bg-card", isDragging && "opacity-60 shadow-lg")}>
       <div className="flex items-center gap-3 border-l-4 px-3 py-3" style={{ borderColor: dom.color }}>
         <button ref={setActivatorNodeRef} {...attributes} {...listeners}
           className="cursor-grab text-muted-foreground hover:text-foreground active:cursor-grabbing" aria-label="Reorder domain">
@@ -119,12 +119,12 @@ function Band({ dom, onLocalReorder }: { dom: Dom; onLocalReorder: (ids: string[
             <button onClick={() => { setEditing(false); setName(dom.name); }} className="text-muted-foreground"><X className="h-4 w-4" /></button>
           </span>
         ) : (
-          <span className="font-medium text-even-navy">{dom.name}</span>
+          <span className="font-medium text-foreground">{dom.name}</span>
         )}
         <span className="text-xs text-muted-foreground">{dom.initiatives.length} initiatives</span>
         <div className="ml-auto flex items-center gap-3">
           <AvatarStack people={dom.guides} />
-          <div className="flex items-center gap-1">
+          <div className="hidden items-center gap-1 lg:flex">
             {SWATCHES.slice(0, 6).map((c) => (
               <button key={c} onClick={() => start(() => recolorDomain(dom.id, c))}
                 className={cn("h-3.5 w-3.5 rounded-full ring-1 ring-black/10", dom.color === c && "ring-2 ring-offset-1 ring-black/40")}
@@ -168,11 +168,11 @@ function Card({ ini }: { ini: Ini }) {
   return (
     <div ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn("w-48 rounded-xl border bg-white shadow-sm", isDragging && "opacity-60 shadow-lg")}
+      className={cn("w-48 rounded-xl border bg-card shadow-sm", isDragging && "opacity-60 shadow-lg")}
       {...attributes} {...listeners}>
       <Link href={`/n/initiative/${ini.id}`} className="block p-4" draggable={false}>
         <div className="flex items-start justify-between gap-2">
-          <span className="text-sm font-medium leading-snug text-even-navy">{ini.title}</span>
+          <span className="text-sm font-medium leading-snug text-foreground">{ini.title}</span>
           <HealthDot health={ini.health} className="mt-1 shrink-0" />
         </div>
         <div className="mt-2 flex flex-wrap items-center gap-1.5 text-[11px] text-muted-foreground">
@@ -192,7 +192,7 @@ function AddDomainForm({ onAdd, onCancel }: { onAdd: (n: string, c: string) => v
     <form className="mt-4 flex items-center gap-3 rounded-xl border p-3"
       onSubmit={(e) => { e.preventDefault(); if (name.trim()) onAdd(name.trim(), color); }}>
       <Input value={name} onChange={(e) => setName(e.target.value)} placeholder="Domain name" autoFocus className="w-56" />
-      <div className="flex items-center gap-1">
+      <div className="hidden items-center gap-1 lg:flex">
         {SWATCHES.map((c) => (
           <button key={c} type="button" onClick={() => setColor(c)}
             className={cn("h-4 w-4 rounded-full ring-1 ring-black/10", color === c && "ring-2 ring-offset-1 ring-black/40")}

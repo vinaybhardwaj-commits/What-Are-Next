@@ -29,14 +29,14 @@ export function Capture() {
   return (
     <>
       <button onClick={() => setOpen(true)}
-        className="fixed bottom-6 left-6 z-40 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
+        className="fixed bottom-20 left-4 z-40 md:bottom-6 md:left-6 flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg hover:bg-primary/90"
         aria-label="Capture (c)">
         <Plus className="h-5 w-5" />
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex items-start justify-center bg-black/30 p-6 pt-32" onClick={() => setOpen(false)}>
-          <div className="w-full max-w-lg rounded-2xl bg-white p-4 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <div className="mb-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">Capture to inbox</div>
+          <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-4 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+            <div className="mb-2 text-xs font-medium uppercase tracking-wider font-mono text-muted-foreground">Capture to inbox</div>
             <input ref={ref} value={text} onChange={(e) => setText(e.target.value)}
               onKeyDown={(e) => { if (e.key === "Enter") submit(); }}
               placeholder="What's on your mind? (Enter to capture)"

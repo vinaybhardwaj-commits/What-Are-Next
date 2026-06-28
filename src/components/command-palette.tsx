@@ -54,7 +54,7 @@ export function CommandPalette({ index }: { index: Node[] }) {
 
   return (
     <div className="fixed inset-0 z-[60] flex items-start justify-center bg-black/30 p-6 pt-28" onClick={() => setOpen(false)}>
-      <div className="w-full max-w-xl overflow-hidden rounded-2xl bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
         <div className="flex items-center gap-2 border-b px-4 py-3">
           <Search className="h-4 w-4 text-muted-foreground" />
           <input ref={inputRef} value={q} onChange={(e) => { setQ(e.target.value); setSel(0); }}
@@ -76,7 +76,7 @@ export function CommandPalette({ index }: { index: Node[] }) {
                   className={`flex w-full items-center gap-3 rounded-lg px-3 py-2 text-left text-sm ${i === sel ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}`}>
                   <Icon className="h-4 w-4 shrink-0 opacity-80" />
                   <span className="flex-1 truncate">{it.label}</span>
-                  {it.sub && <span className={`text-[10px] uppercase tracking-wide ${i === sel ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{it.sub}</span>}
+                  {it.sub && <span className={`text-[10px] uppercase tracking-wider font-mono ${i === sel ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{it.sub}</span>}
                   {i === sel && <CornerDownLeft className="h-3.5 w-3.5" />}
                 </button>
               </li>

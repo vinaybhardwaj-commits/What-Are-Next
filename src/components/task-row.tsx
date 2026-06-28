@@ -23,7 +23,7 @@ export function TaskRow({ task, people, contexts = DEFAULT_CONTEXTS }: { task: R
   const done = task.gtdStatus === "done";
 
   return (
-    <div className={cn("rounded-lg border bg-white", task.blocked && "border-destructive/40")}>
+    <div className={cn("rounded-lg border bg-card", task.blocked && "border-destructive/40")}>
       <div className="flex items-start gap-2 px-3 py-2">
         <input type="checkbox" checked={done} className="mt-1"
           onChange={(e) => start(() => (e.target.checked ? completeTask(task.id) : reopenTask(task.id)))} />
@@ -50,7 +50,7 @@ export function TaskRow({ task, people, contexts = DEFAULT_CONTEXTS }: { task: R
             {contexts.map((c) => {
               const on = task.contexts.includes(c);
               return <button key={c} onClick={() => start(() => setContexts(task.id, on ? task.contexts.filter((x) => x !== c) : [...task.contexts, c]))}
-                className={cn("rounded px-1.5 py-0.5", on ? "bg-primary text-primary-foreground" : "bg-white border")}>{c}</button>;
+                className={cn("rounded px-1.5 py-0.5", on ? "bg-primary text-primary-foreground" : "bg-card border")}>{c}</button>;
             })}
           </div>
           <button onClick={() => start(() => dropTask(task.id))} className="text-destructive">Drop task</button>
@@ -64,7 +64,7 @@ function Picker({ label, people, onPick, onClear, clearLabel }: { label: string;
   return (
     <div className="flex items-center gap-2">
       <span className="w-20 shrink-0 text-muted-foreground">{label}</span>
-      <select className="rounded border bg-white px-1.5 py-1" defaultValue="" onChange={(e) => { if (e.target.value === "__clear") onClear(); else if (e.target.value) onPick(e.target.value); e.currentTarget.value = ""; }}>
+      <select className="rounded border bg-card px-1.5 py-1" defaultValue="" onChange={(e) => { if (e.target.value === "__clear") onClear(); else if (e.target.value) onPick(e.target.value); e.currentTarget.value = ""; }}>
         <option value="" disabled>pick…</option>
         {people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
         <option value="__clear">{clearLabel}</option>
@@ -78,7 +78,7 @@ function Inline({ label, placeholder, type = "text", onSubmit }: { label: string
   return (
     <form className="flex items-center gap-2" onSubmit={(e) => { e.preventDefault(); if (v.trim()) { onSubmit(v); setV(""); } }}>
       <span className="w-20 shrink-0 text-muted-foreground">{label}</span>
-      <input type={type} value={v} placeholder={placeholder} onChange={(e) => setV(e.target.value)} className="flex-1 rounded border bg-white px-1.5 py-1" />
+      <input type={type} value={v} placeholder={placeholder} onChange={(e) => setV(e.target.value)} className="flex-1 rounded border bg-card px-1.5 py-1" />
       <button className="rounded bg-primary px-2 py-1 text-white">Set</button>
     </form>
   );

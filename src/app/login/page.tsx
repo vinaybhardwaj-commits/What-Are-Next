@@ -26,15 +26,15 @@ function LoginForm() {
   }
 
   return (
-    <form onSubmit={submit} className="w-full max-w-sm rounded-2xl bg-white p-8 shadow-xl">
+    <form onSubmit={submit} className="w-full max-w-sm rounded-2xl border border-border bg-card p-8 shadow-2xl">
       <div className="mb-6 flex items-center gap-2">
         <Sparkles className="h-6 w-6 text-even-pink" />
         <div>
-          <div className="font-semibold text-even-navy">What Are Next</div>
+          <div className="font-semibold text-foreground">What Are Next</div>
           <div className="text-xs text-muted-foreground">Private command center</div>
         </div>
       </div>
-      <label className="mb-2 block text-sm font-medium text-even-navy">Passcode</label>
+      <label className="mb-2 block text-sm font-medium text-foreground">Passcode</label>
       <input
         type="password"
         autoFocus

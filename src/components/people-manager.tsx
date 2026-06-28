@@ -20,7 +20,7 @@ function PersonChip({ p }: { p: P }) {
 
   if (editing) {
     return (
-      <span className="inline-flex items-center gap-1 rounded-full border bg-white py-1 pl-2 pr-1.5 text-sm shadow-sm">
+      <span className="inline-flex items-center gap-1 rounded-full border bg-card py-1 pl-2 pr-1.5 text-sm shadow-sm">
         <Avatar name={name || p.name} color={p.color} />
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" autoFocus
           onKeyDown={(e) => { if (e.key === "Enter") save(); if (e.key === "Escape") setEditing(false); }}
@@ -36,7 +36,7 @@ function PersonChip({ p }: { p: P }) {
   return (
     <span className="group inline-flex items-center gap-1.5 rounded-full border bg-secondary/50 py-1 pl-1 pr-2 text-sm">
       <Avatar name={p.name} color={p.color} />
-      <span className="font-medium text-even-navy">{p.name}</span>
+      <span className="font-medium text-foreground">{p.name}</span>
       {p.role ? <span className="text-xs text-muted-foreground">· {p.role}</span> : <span className="text-xs italic text-muted-foreground/60">· no role</span>}
       <button onClick={() => setEditing(true)} className="ml-0.5 text-muted-foreground opacity-0 transition group-hover:opacity-100 hover:text-foreground" aria-label={`Edit ${p.name}`}><Pencil className="h-3 w-3" /></button>
       <button onClick={() => { if (confirm(`Remove ${p.name} from the roster? (kept in history)`)) start(() => archivePerson(p.id)); }}
@@ -50,8 +50,8 @@ export function PeopleManager({ people }: { people: P[] }) {
   const [role, setRole] = useState("");
   const [, start] = useTransition();
   return (
-    <div className="mb-6 rounded-xl border bg-white p-4">
-      <div className="mb-3 text-sm font-semibold text-even-navy">Roster <span className="font-normal text-muted-foreground">({people.length}) — hover a name to edit role or remove</span></div>
+    <div className="mb-6 rounded-xl border bg-card p-4">
+      <div className="mb-3 text-sm font-semibold text-foreground">Roster <span className="font-normal text-muted-foreground">({people.length}) — hover a name to edit role or remove</span></div>
       <div className="mb-3 flex flex-wrap gap-2">
         {people.map((p) => <PersonChip key={p.id} p={p} />)}
       </div>

@@ -4,7 +4,7 @@ const config: Config = {
   darkMode: ["class"],
   content: ["./src/**/*.{ts,tsx}"],
   theme: {
-    container: { center: true, padding: "2rem", screens: { "2xl": "1400px" } },
+    container: { center: true, padding: "1.5rem", screens: { "2xl": "1400px" } },
     extend: {
       colors: {
         border: "hsl(var(--border))",
@@ -19,18 +19,27 @@ const config: Config = {
         accent: { DEFAULT: "hsl(var(--accent))", foreground: "hsl(var(--accent-foreground))" },
         popover: { DEFAULT: "hsl(var(--popover))", foreground: "hsl(var(--popover-foreground))" },
         card: { DEFAULT: "hsl(var(--card))", foreground: "hsl(var(--card-foreground))" },
-        // Even brand
+        // Even brand, remapped for the dark technical theme
         even: {
-          blue: "#0055FF",
-          navy: "#002054",
-          pink: "#F96EB1",
-          surface: "#FCFCFC",
+          blue: "#2A6DFF",
+          navy: "#0E1014",     // deep panel (sidebar / login)
+          pink: "#2A6DFF",     // collapsed into the single blue accent
+          surface: "#0B0C0E",  // = background
         },
-        // health
-        health: { green: "#16A34A", amber: "#F59E0B", red: "#F96EB1" },
+        // desaturated status for dark
+        health: { green: "#3FB950", amber: "#D9A23B", red: "#E1574E" },
       },
-      borderRadius: { lg: "var(--radius)", md: "calc(var(--radius) - 2px)", sm: "calc(var(--radius) - 4px)", xl: "calc(var(--radius) + 4px)" },
-      fontFamily: { sans: ["var(--font-inter)", "system-ui", "sans-serif"] },
+      borderRadius: {
+        "2xl": "calc(var(--radius) + 6px)",
+        xl: "calc(var(--radius) + 4px)",
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 1px)",
+        sm: "calc(var(--radius) - 2px)",
+      },
+      fontFamily: {
+        sans: ["var(--font-inter)", "system-ui", "sans-serif"],
+        mono: ["var(--font-mono)", "ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
+      },
       keyframes: {
         "accordion-down": { from: { height: "0" }, to: { height: "var(--radix-accordion-content-height)" } },
         "accordion-up": { from: { height: "var(--radix-accordion-content-height)" }, to: { height: "0" } },

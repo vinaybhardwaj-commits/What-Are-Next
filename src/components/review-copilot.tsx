@@ -16,10 +16,10 @@ export function ReviewCopilot() {
       {data && (
         <>
           <div className="mt-4 flex gap-3">
-            <div className="rounded-lg border bg-white px-4 py-2 text-center"><div className="text-xl font-semibold text-health-green">{data.doneCount}</div><div className="text-[11px] uppercase tracking-wide text-muted-foreground">done this week</div></div>
-            <div className="rounded-lg border bg-white px-4 py-2 text-center"><div className="text-xl font-semibold text-health-amber">{data.staleCount}</div><div className="text-[11px] uppercase tracking-wide text-muted-foreground">stale waiting-ons</div></div>
+            <div className="rounded-lg border bg-card px-4 py-2 text-center"><div className="text-xl font-semibold text-health-green">{data.doneCount}</div><div className="text-[11px] uppercase tracking-wider font-mono text-muted-foreground">done this week</div></div>
+            <div className="rounded-lg border bg-card px-4 py-2 text-center"><div className="text-xl font-semibold text-health-amber">{data.staleCount}</div><div className="text-[11px] uppercase tracking-wider font-mono text-muted-foreground">stale waiting-ons</div></div>
           </div>
-          <div className="mt-4 whitespace-pre-wrap rounded-xl border bg-white p-4 text-sm leading-relaxed">{data.text}</div>
+          <div className="mt-4 whitespace-pre-wrap rounded-xl border bg-card p-4 text-sm leading-relaxed">{data.text}</div>
         </>
       )}
     </div>

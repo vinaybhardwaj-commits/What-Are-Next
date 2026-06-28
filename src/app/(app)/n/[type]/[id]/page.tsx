@@ -23,7 +23,7 @@ export const dynamic = "force-dynamic";
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <section className="mt-6">
-      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wide text-muted-foreground">{title}</h2>
+      <h2 className="mb-2 text-sm font-semibold uppercase tracking-wider font-mono text-muted-foreground">{title}</h2>
       {children}
     </section>
   );
@@ -38,7 +38,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     const { goal, kernel, coherent, linkedInitiatives, allInitiatives, guidingPrinciples } = data;
     const swe = coherent.length > 0 && coherent.some((c) => !c.linkedNodeId);
     return (
-      <div className="max-w-3xl p-6">
+      <div className="max-w-3xl p-4 md:p-6">
         <Link href="/strategy" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> Strategy</Link>
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1"><EditableTitle kind="goal" id={goal.id} value={goal.title} /></div>
@@ -57,7 +57,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
         <Section title={`Linked initiatives (${linkedInitiatives.length})`}>
           {linkedInitiatives.length === 0 ? <p className="text-sm text-muted-foreground">No initiatives linked yet. Link them from an initiative page or via a coherent action above.</p> : (
             <ul className="space-y-2">
-              {linkedInitiatives.map((i) => <li key={i.id}><Link href={`/n/initiative/${i.id}`} className="block rounded-lg border bg-white px-3 py-2 text-sm hover:bg-secondary">{i.title}</Link></li>)}
+              {linkedInitiatives.map((i) => <li key={i.id}><Link href={`/n/initiative/${i.id}`} className="block rounded-lg border bg-card px-3 py-2 text-sm hover:bg-secondary">{i.title}</Link></li>)}
             </ul>
           )}
         </Section>
@@ -81,7 +81,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     const persons = people.map((p) => ({ id: p.id, name: p.name, color: p.avatarColor }));
     const deps = dependencies.map((d) => ({ id: d.id, state: d.state, externalLabel: d.externalLabel, resolutionNote: d.resolutionNote, blockerNodeType: d.blockerNodeType }));
     return (
-      <div className="max-w-3xl p-6">
+      <div className="max-w-3xl p-4 md:p-6">
         <Link href="/gtd" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> GTD Lists</Link>
         <div className="mt-1"><EditableTitle kind="task" id={id} value={task.title} /></div>
         <div className="mt-4"><TaskDetail task={t} people={persons} deps={deps} contexts={contexts} /></div>
@@ -103,7 +103,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     if (!data) notFound();
     const { initiative, domain, actions } = data;
     return (
-      <div className="max-w-3xl p-6">
+      <div className="max-w-3xl p-4 md:p-6">
         <Link href="/" className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> Strategy Map</Link>
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           {domain && <span className="rounded px-1.5 py-0.5" style={{ backgroundColor: (domain.color || "#0055FF") + "22", color: domain.color || undefined }}>{domain.name}</span>}
@@ -116,7 +116,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
           <ul className="space-y-2">
             {actions.map((a) => (
               <li key={a.id}>
-                <Link href={`/n/action/${a.id}`} className="flex items-center justify-between gap-3 rounded-lg border bg-white px-3 py-2 text-sm hover:bg-secondary">
+                <Link href={`/n/action/${a.id}`} className="flex items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2 text-sm hover:bg-secondary">
                   <span className="flex items-center gap-2">
                     {a.sequence != null && <span className="rounded bg-secondary px-1.5 py-0.5 text-[11px] text-muted-foreground">Time {a.sequence}</span>}
                     <span className={a.gtdStatus === "someday" ? "text-muted-foreground" : ""}>{a.title}</span>
@@ -138,7 +138,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
     if (!data) notFound();
     const { action, initiative, tasks } = data;
     return (
-      <div className="max-w-3xl p-6">
+      <div className="max-w-3xl p-4 md:p-6">
         <Link href={initiative ? `/n/initiative/${initiative.id}` : "/"} className="mb-4 inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"><ChevronLeft className="h-4 w-4" /> {initiative?.title ?? "Back"}</Link>
         <div className="mt-1"><EditableTitle kind="action" id={id} value={action.title} /></div>
         <Section title="Notes"><NotesEditor nodeType="action" id={id} initial={action.notes ?? ""} /></Section>

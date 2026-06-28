@@ -13,7 +13,7 @@ export function TaskList({ actionId, tasks }: { actionId: string; tasks: T[] }) 
       {tasks.map((t) => {
         const done = t.gtdStatus === "done";
         return (
-          <label key={t.id} className="flex items-center gap-2 rounded-lg border bg-white px-3 py-2 text-sm">
+          <label key={t.id} className="flex items-center gap-2 rounded-lg border bg-card px-3 py-2 text-sm">
             <input type="checkbox" checked={done}
               onChange={(e) => start(() => toggleTask(t.id, e.target.checked, actionId))} />
             <span className={done ? "text-muted-foreground line-through" : ""}>{t.title}</span>

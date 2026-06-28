@@ -22,7 +22,7 @@ export default async function GtdPage() {
   const persons = ppl.map((p) => ({ id: p.id, name: p.name, color: p.avatarColor }));
   return (
     <div className="p-6">
-      <h1 className="mb-4 text-xl font-semibold text-even-navy">GTD Lists</h1>
+      <h1 className="mb-4 text-xl font-semibold text-foreground">GTD Lists</h1>
       <GtdLists tasks={tasks} people={persons} contexts={contexts} />
     </div>
   );

@@ -28,15 +28,15 @@ export function ArtefactUploader({ nodeType, nodeId, artefacts }: { nodeType: st
     <div>
       <div className="flex flex-wrap gap-3">
         {artefacts.map((a) => (
-          <div key={a.id} className="group relative w-40 rounded-xl border bg-white p-3">
+          <div key={a.id} className="group relative w-40 rounded-xl border bg-card p-3">
             <a href={a.blobUrl} target="_blank" rel="noreferrer" className="block">
               {isImg(a.contentType)
                 ? <img src={a.blobUrl} alt={a.label || ""} className="mb-2 h-20 w-full rounded object-cover" />
                 : <div className="mb-2 flex h-20 items-center justify-center rounded bg-secondary"><FileText className="h-7 w-7 text-muted-foreground" /></div>}
-              <div className="truncate text-xs font-medium text-even-navy">{a.label}</div>
+              <div className="truncate text-xs font-medium text-foreground">{a.label}</div>
               {a.sizeBytes != null && <div className="text-[10px] text-muted-foreground">{Math.round(a.sizeBytes / 1024)} KB</div>}
             </a>
-            <button onClick={() => start(() => removeArtefact(a.id, nodeType, nodeId))} className="absolute -right-2 -top-2 hidden rounded-full bg-white p-0.5 shadow group-hover:block" aria-label="Remove"><X className="h-3.5 w-3.5" /></button>
+            <button onClick={() => start(() => removeArtefact(a.id, nodeType, nodeId))} className="absolute -right-2 -top-2 hidden rounded-full bg-card p-0.5 shadow group-hover:block" aria-label="Remove"><X className="h-3.5 w-3.5" /></button>
           </div>
         ))}
         <button onClick={() => ref.current?.click()} disabled={busy}

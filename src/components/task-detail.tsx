@@ -29,7 +29,7 @@ export function TaskDetail({ task, people, deps, contexts = DEFAULT_CONTEXTS }: 
   const active = deps.filter((d) => d.state === "active");
   const resolved = deps.filter((d) => d.state === "resolved");
   const done = task.gtdStatus === "done";
-  const sel = "rounded border bg-white px-2 py-1.5 text-sm";
+  const sel = "rounded border bg-card px-2 py-1.5 text-sm";
 
   return (
     <div className="space-y-6">
@@ -64,14 +64,14 @@ export function TaskDetail({ task, people, deps, contexts = DEFAULT_CONTEXTS }: 
           {contexts.map((c) => {
             const on = task.contexts.includes(c);
             return <button key={c} onClick={() => start(() => setContexts(task.id, on ? task.contexts.filter((x) => x !== c) : [...task.contexts, c]))}
-              className={cn("rounded px-2 py-0.5 text-xs", on ? "bg-primary text-primary-foreground" : "border bg-white")}>{c}</button>;
+              className={cn("rounded px-2 py-0.5 text-xs", on ? "bg-primary text-primary-foreground" : "border bg-card")}>{c}</button>;
           })}
         </div>
       </div>
 
       {/* Blockers */}
       <div>
-        <div className="mb-2 text-sm font-semibold text-even-navy">Blockers</div>
+        <div className="mb-2 text-sm font-semibold text-foreground">Blockers</div>
         {active.length === 0 && <p className="text-sm text-muted-foreground">No active blockers.</p>}
         <div className="space-y-2">
           {active.map((d) => <ResolveBlocker key={d.id} dep={d} />)}
@@ -90,9 +90,9 @@ export function TaskDetail({ task, people, deps, contexts = DEFAULT_CONTEXTS }: 
 
       {/* Notes */}
       <div>
-        <div className="mb-2 text-sm font-semibold text-even-navy">Notes</div>
+        <div className="mb-2 text-sm font-semibold text-foreground">Notes</div>
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4}
-          className="w-full rounded-lg border border-input bg-white p-3 text-sm outline-none focus:ring-2 focus:ring-ring" placeholder="Notes (markdown)…" />
+          className="w-full rounded-lg border border-input bg-card p-3 text-sm outline-none focus:ring-2 focus:ring-ring" placeholder="Notes (markdown)…" />
         <button onClick={() => start(() => updateNotes("task", task.id, notes))} className="mt-2 rounded-lg border px-3 py-1.5 text-sm">Save notes</button>
       </div>
 
@@ -122,7 +122,7 @@ function ResolveBlocker({ dep }: { dep: Dep }) {
       onSubmit={(e) => { e.preventDefault(); if (note.trim()) start(() => resolveBlocker(dep.id, note)); }}>
       <span className="text-sm text-destructive">{dep.externalLabel || "dependency"}</span>
       <input value={note} onChange={(e) => setNote(e.target.value)} placeholder="how was it removed?"
-        className="h-8 flex-1 rounded border bg-white px-2 text-xs outline-none" />
+        className="h-8 flex-1 rounded border bg-card px-2 text-xs outline-none" />
       <button className="rounded bg-health-green px-2 py-1 text-xs font-medium text-white">Resolve</button>
     </form>
   );

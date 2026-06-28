@@ -4,52 +4,56 @@
 
 @layer base {
   :root {
-    /* Even palette mapped to shadcn tokens (light) */
-    --background: 0 0% 99%;            /* #FCFCFC surface */
-    --foreground: 217 100% 16%;        /* #002054 navy text */
-    --card: 0 0% 100%;
-    --card-foreground: 217 100% 16%;
-    --popover: 0 0% 100%;
-    --popover-foreground: 217 100% 16%;
-    --primary: 222 100% 50%;           /* #0055FF blue */
+    /* Refined technical dark — near-black, off-white, one Even-blue accent */
+    --background: 222 14% 5%;          /* #0B0C0E */
+    --foreground: 210 14% 92%;         /* #E7E9EC */
+    --card: 222 13% 8%;                /* #111317 */
+    --card-foreground: 210 14% 92%;
+    --popover: 222 14% 7%;
+    --popover-foreground: 210 14% 92%;
+    --primary: 222 100% 58%;           /* #2A6DFF — Even blue, lifted for dark */
     --primary-foreground: 0 0% 100%;
-    --secondary: 217 60% 96%;
-    --secondary-foreground: 217 100% 16%;
-    --muted: 217 30% 95%;
-    --muted-foreground: 217 15% 45%;
-    --accent: 330 92% 70%;             /* #F96EB1 pink */
+    --secondary: 222 12% 13%;          /* chips / hover */
+    --secondary-foreground: 210 14% 90%;
+    --muted: 222 12% 11%;
+    --muted-foreground: 215 10% 56%;   /* #828A93 */
+    --accent: 222 100% 58%;            /* single accent = blue */
     --accent-foreground: 0 0% 100%;
-    --destructive: 330 92% 64%;        /* pink-red for blocked/overdue */
+    --destructive: 4 72% 58%;          /* #E1574E muted red — blocked/overdue */
     --destructive-foreground: 0 0% 100%;
-    --border: 217 30% 90%;
-    --input: 217 30% 88%;
-    --ring: 222 100% 50%;
-    --radius: 0.75rem;                 /* rounded-xl feel */
-  }
-  .dark {
-    --background: 217 100% 8%;
-    --foreground: 0 0% 99%;
-    --card: 217 80% 11%;
-    --card-foreground: 0 0% 99%;
-    --popover: 217 80% 11%;
-    --popover-foreground: 0 0% 99%;
-    --primary: 222 100% 60%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 217 50% 18%;
-    --secondary-foreground: 0 0% 99%;
-    --muted: 217 40% 18%;
-    --muted-foreground: 217 20% 70%;
-    --accent: 330 92% 70%;
-    --accent-foreground: 217 100% 10%;
-    --destructive: 330 92% 64%;
-    --destructive-foreground: 0 0% 100%;
-    --border: 217 40% 22%;
-    --input: 217 40% 22%;
+    --border: 220 11% 16%;             /* #232730 hairline */
+    --input: 220 11% 18%;
     --ring: 222 100% 60%;
+    --radius: 0.25rem;                 /* hard edges */
   }
 }
 
 @layer base {
   * { @apply border-border; }
-  body { @apply bg-background text-foreground antialiased; }
+  html { color-scheme: dark; }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-feature-settings: "cv02","cv03","cv04","ss01";
+  }
+  ::selection { background: hsl(var(--primary) / 0.30); }
+  /* technical hairline scrollbars */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: hsl(220 11% 18%); border: 3px solid hsl(var(--background)); border-radius: 6px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(220 11% 26%); }
+  /* dark form controls */
+  input, textarea, select { color-scheme: dark; }
+  select option { background: hsl(var(--popover)); color: hsl(var(--foreground)); }
+}
+
+@layer components {
+  /* monospace technical eyebrow/label */
+  .eyebrow { @apply font-mono text-[10px] font-medium uppercase tracking-[0.14em] text-muted-foreground; }
+  /* faint grid texture for the technocratic surface */
+  .grid-bg {
+    background-image:
+      linear-gradient(to right, hsl(220 11% 100% / 0.025) 1px, transparent 1px),
+      linear-gradient(to bottom, hsl(220 11% 100% / 0.025) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
 }

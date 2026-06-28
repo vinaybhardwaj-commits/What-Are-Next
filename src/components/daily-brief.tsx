@@ -12,7 +12,7 @@ export function DailyBrief() {
   return (
     <div className="mb-4 rounded-xl border border-accent/30 bg-accent/5 p-3">
       <div className="mb-1 flex items-center justify-between">
-        <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-accent-foreground"><Sparkles className="h-3.5 w-3.5" /> Daily brief</div>
+        <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider font-mono text-accent-foreground"><Sparkles className="h-3.5 w-3.5" /> Daily brief</div>
         {text && <button onClick={() => setDismissed(true)} className="text-muted-foreground hover:text-foreground"><X className="h-3.5 w-3.5" /></button>}
       </div>
       {text ? (

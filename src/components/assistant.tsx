@@ -46,15 +46,15 @@ export function Assistant() {
   return (
     <>
       <button onClick={() => setOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex h-12 items-center gap-2 rounded-full bg-even-navy px-4 text-sm font-medium text-white shadow-lg hover:bg-even-navy/90"
+        className="fixed bottom-20 right-4 z-40 md:bottom-6 md:right-6 flex h-12 items-center gap-2 rounded-full bg-even-navy px-4 text-sm font-medium text-white shadow-lg hover:bg-even-navy/90"
         aria-label="Assistant (⌘J)">
         <Sparkles className="h-4 w-4 text-even-pink" /> Ask
       </button>
       {open && (
         <div className="fixed inset-0 z-50 flex justify-end bg-black/20" onClick={() => setOpen(false)}>
-          <div className="flex h-full w-full max-w-md flex-col bg-white shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div className="flex h-full w-full max-w-md flex-col border-l border-border bg-card shadow-2xl" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between border-b px-4 py-3">
-              <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-even-pink" /><span className="font-semibold text-even-navy">Assistant</span><kbd className="rounded border px-1 text-[10px] text-muted-foreground">⌘J</kbd></div>
+              <div className="flex items-center gap-2"><Sparkles className="h-4 w-4 text-even-pink" /><span className="font-semibold text-foreground">Assistant</span><kbd className="rounded border px-1 text-[10px] text-muted-foreground">⌘J</kbd></div>
               <button onClick={() => setOpen(false)} className="text-muted-foreground hover:text-foreground"><X className="h-4 w-4" /></button>
             </div>
             <div className="flex-1 space-y-4 overflow-y-auto p-4">

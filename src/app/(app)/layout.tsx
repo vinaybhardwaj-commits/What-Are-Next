@@ -1,4 +1,5 @@
 import { AppSidebar } from "@/components/app-sidebar";
+import { MobileNav } from "@/components/mobile-nav";
 import { Capture } from "@/components/capture";
 import { CommandPalette } from "@/components/command-palette";
 import { Assistant } from "@/components/assistant";
@@ -11,7 +12,8 @@ export default async function AppLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen overflow-hidden">
       <AppSidebar />
-      <main className="flex-1 overflow-y-auto bg-even-surface">{children}</main>
+      <main className="grid-bg flex-1 overflow-y-auto pb-16 md:pb-0">{children}</main>
+      <MobileNav />
       <Capture />
       <CommandPalette index={index} />
       <Assistant />

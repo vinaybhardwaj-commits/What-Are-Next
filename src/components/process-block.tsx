@@ -16,14 +16,14 @@ export function ProcessBlock({ nodeType, nodeId, processes, people }: { nodeType
   return (
     <div className="space-y-4">
       {processes.map((proc) => (
-        <div key={proc.id} className="rounded-xl border bg-white p-4">
-          <div className="mb-2 font-medium text-even-navy">{proc.title}</div>
+        <div key={proc.id} className="rounded-xl border bg-card p-4">
+          <div className="mb-2 font-medium text-foreground">{proc.title}</div>
           <ol className="space-y-1.5">
             {proc.steps.map((s) => (
               <li key={s.id} className="flex items-center gap-2 text-sm">
                 <span className="w-5 text-xs text-muted-foreground">{s.stepNo}.</span>
                 <span className={cn("flex-1", s.status === "done" && "text-muted-foreground line-through")}>{s.text}</span>
-                <select value={s.ownerPersonId ?? ""} onChange={(e) => start(() => setStepOwner(s.id, e.target.value || null, nodeType, nodeId))} className="rounded border bg-white px-1 py-0.5 text-xs">
+                <select value={s.ownerPersonId ?? ""} onChange={(e) => start(() => setStepOwner(s.id, e.target.value || null, nodeType, nodeId))} className="rounded border bg-card px-1 py-0.5 text-xs">
                   <option value="">owner…</option>{people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
                 </select>
                 <select value={s.status} onChange={(e) => start(() => setStepStatus(s.id, e.target.value, nodeType, nodeId))} className="rounded border px-1 py-0.5 text-xs font-medium text-white" style={{ backgroundColor: STATUS_COLOR[s.status] }}>
