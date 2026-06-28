@@ -31,8 +31,7 @@ export async function getBoard() {
       id: i.id,
       title: i.title,
       gtdStatus: i.gtdStatus,
-      goalId: i.goalId,
-      goalTitle: i.goalId ? (goalTitleById.get(i.goalId) || null) : null,
+      goalTitles: ((i.goalIds as string[]) || []).map((gid) => goalTitleById.get(gid)).filter(Boolean) as string[],
       actionCount: actCount.get(i.id) || 0,
       health: (i.gtdStatus === "someday" ? "amber" : "green") as Health,
     }));

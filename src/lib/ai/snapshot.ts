@@ -9,7 +9,7 @@ export async function getBoardSnapshot() {
   const domains = board.map((d) => ({
     domain: d.name,
     guides: d.guides.map((g) => g.name),
-    initiatives: d.initiatives.map((i) => ({ id: i.id, title: i.title, status: i.gtdStatus, goal: i.goalTitle || undefined })),
+    initiatives: d.initiatives.map((i) => ({ id: i.id, title: i.title, status: i.gtdStatus, goals: i.goalTitles.length ? i.goalTitles : undefined })),
   }));
   const activeTasks = tasks.filter((t) => t.gtdStatus !== "done").map((t) => ({
     id: t.id, title: t.title, status: t.gtdStatus, contexts: t.contexts,

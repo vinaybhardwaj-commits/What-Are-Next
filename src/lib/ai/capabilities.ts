@@ -48,7 +48,8 @@ export async function critiqueKernel(goalId: string) {
   if (!g) return "Goal not found.";
   const [k] = await db.select().from(strategyKernels).where(eq(strategyKernels.goalId, goalId));
   const cas = k ? await db.select().from(kernelActions).where(eq(kernelActions.kernelId, k.id)) : [];
-  const linked = await db.select({ title: initiatives.title }).from(initiatives).where(and(eq(initiatives.goalId, goalId), isNull(initiatives.archivedAt)));
+  const allInis = await db.select({ title: initiatives.title, goalIds: initiatives.goalIds }).from(initiatives).where(isNull(initiatives.archivedAt));
+  const linked = allInis.filter((i) => ((i.goalIds as string[]) || []).includes(goalId));
   const sys = `You are a sharp strategy critic in the tradition of Richard Rumelt's "Good Strategy / Bad Strategy". Be pointed, not flattering. ${VOICE}`;
   const prompt = `Critique this goal's strategy kernel. Assess: does the diagnosis name a real crux? Do the guiding principles follow from it? Do the coherent actions follow from the principles? Flag any coherent action with no linked execution (strategy without execution) and any linked initiative doing work no principle justifies (execution without strategy). End with the single most important fix.
 

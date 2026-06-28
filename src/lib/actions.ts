@@ -355,6 +355,16 @@ export async function linkCoherentAction(id: string, goalId: string, initiativeI
     linkedNodeType: initiativeId ? "initiative" : null,
     linkedNodeId: initiativeId,
   }).where(eq(kernelActions.id, id));
+  // Coherence: linking a coherent action to an initiative also tags that initiative as serving this goal.
+  // (Unlinking does NOT auto-remove the strategy tag — that stays manual to avoid surprises.)
+  if (initiativeId) {
+    const [ini] = await db.select({ g: initiatives.goalIds }).from(initiatives).where(eq(initiatives.id, initiativeId));
+    const cur = (ini?.g as string[]) || [];
+    if (!cur.includes(goalId)) {
+      await db.update(initiatives).set({ goalIds: [...cur, goalId], updatedAt: new Date() }).where(eq(initiatives.id, initiativeId));
+    }
+    revalidatePath(`/n/initiative/${initiativeId}`);
+  }
   revalStrategy(goalId);
 }
 export async function removeCoherentAction(id: string, goalId: string) {
@@ -362,11 +372,11 @@ export async function removeCoherentAction(id: string, goalId: string) {
   revalStrategy(goalId);
 }
 
-export async function linkInitiativeToGoal(initiativeId: string, goalId: string | null) {
-  await db.update(initiatives).set({ goalId, updatedAt: new Date() }).where(eq(initiatives.id, initiativeId));
-  await log("initiative", initiativeId, goalId ? "linked-to-goal" : "unlinked-from-goal");
-  revalStrategy(goalId || undefined);
-  revalidatePath(`/n/initiative/${initiativeId}`);
+export async function setInitiativeGoals(initiativeId: string, goalIds: string[]) {
+  await db.update(initiatives).set({ goalIds, updatedAt: new Date() }).where(eq(initiatives.id, initiativeId));
+  await log("initiative", initiativeId, "set-strategies");
+  revalidatePath("/"); revalidatePath("/strategy"); revalidatePath(`/n/initiative/${initiativeId}`);
+  for (const g of goalIds) revalidatePath(`/n/goal/${g}`);
 }
 
 /* ============================ People roster management ============================ */
@@ -439,7 +449,7 @@ export async function setGoalDomains(goalId: string, domainIds: string[]) {
 export async function createInitiativeForKernel(coherentActionId: string, goalId: string, domainId: string, title: string) {
   const t = title.trim(); if (!t || !domainId) return;
   const [m] = await db.select({ v: max(initiatives.sortOrder) }).from(initiatives).where(eq(initiatives.domainId, domainId));
-  const [ini] = await db.insert(initiatives).values({ domainId, title: t, goalId, sortOrder: (m?.v ?? 0) + 1 }).returning();
+  const [ini] = await db.insert(initiatives).values({ domainId, title: t, goalIds: [goalId], sortOrder: (m?.v ?? 0) + 1 }).returning();
   await db.update(kernelActions).set({ linkedNodeType: "initiative", linkedNodeId: ini.id }).where(eq(kernelActions.id, coherentActionId));
   await log("initiative", ini.id, "created-from-strategy");
   revalStrategy(goalId); revalidatePath("/");

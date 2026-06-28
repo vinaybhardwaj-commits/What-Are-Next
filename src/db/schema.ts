@@ -98,7 +98,8 @@ export const domains = pgTable("domains", {
 export const initiatives = pgTable("initiatives", {
   id: uuid("id").primaryKey().defaultRandom(),
   domainId: uuid("domain_id").notNull().references(() => domains.id, { onDelete: "cascade" }),
-  goalId: uuid("goal_id").references(() => goals.id, { onDelete: "set null" }),
+  goalId: uuid("goal_id").references(() => goals.id, { onDelete: "set null" }), // DEPRECATED: vestigial, superseded by goalIds (kept to avoid destructive drop)
+  goalIds: uuid("goal_ids").array().default([]).notNull(), // an initiative can serve multiple strategies (goals)
   title: text("title").notNull(),
   notes: text("notes"),
   gtdStatus: gtdStatusEnum("gtd_status").default("next").notNull(), // "wishlist" KX rows → someday

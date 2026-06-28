@@ -10,7 +10,7 @@ export async function getGoals() {
     db.select().from(goals).where(isNull(goals.archivedAt)).orderBy(asc(goals.sortOrder)),
     db.select().from(strategyKernels),
     db.select().from(kernelActions).orderBy(asc(kernelActions.sortOrder)),
-    db.select({ id: initiatives.id, goalId: initiatives.goalId, title: initiatives.title }).from(initiatives).where(isNull(initiatives.archivedAt)),
+    db.select({ id: initiatives.id, goalIds: initiatives.goalIds, title: initiatives.title }).from(initiatives).where(isNull(initiatives.archivedAt)),
   ]);
   const allDoms = await db.select({ id: domains.id, name: domains.name, color: domains.color }).from(domains).where(isNull(domains.archivedAt));
   const domById = new Map(allDoms.map((d) => [d.id, d]));
@@ -21,7 +21,7 @@ export async function getGoals() {
   return gs.map((g) => {
     const kernel = kernelByGoal.get(g.id);
     const coherent = kernel ? (actionsByKernel.get(kernel.id) || []) : [];
-    const linkedInitiatives = inis.filter((i) => i.goalId === g.id);
+    const linkedInitiatives = inis.filter((i) => ((i.goalIds as string[]) || []).includes(g.id));
     const hasKernel = !!kernel;
     const unlinkedActions = coherent.filter((a) => !a.linkedNodeId).length;
     // "strategy without execution": coherent actions exist but some don't link to a real node,
@@ -48,11 +48,11 @@ export async function getGoalDetail(id: string) {
     [kernel] = await db.insert(strategyKernels).values({ goalId: id, guidingPrinciples: [] }).returning();
   }
   const allDomains = await db.select({ id: domains.id, name: domains.name, color: domains.color }).from(domains).where(isNull(domains.archivedAt)).orderBy(asc(domains.sortOrder));
-  const [coherent, linkedInitiatives, allInitiatives] = await Promise.all([
+  const [coherent, allInitiatives] = await Promise.all([
     db.select().from(kernelActions).where(eq(kernelActions.kernelId, kernel.id)).orderBy(asc(kernelActions.sortOrder)),
-    db.select({ id: initiatives.id, title: initiatives.title }).from(initiatives).where(and(eq(initiatives.goalId, id), isNull(initiatives.archivedAt))).orderBy(asc(initiatives.title)),
-    db.select({ id: initiatives.id, title: initiatives.title, goalId: initiatives.goalId }).from(initiatives).where(isNull(initiatives.archivedAt)).orderBy(asc(initiatives.title)),
+    db.select({ id: initiatives.id, title: initiatives.title, goalIds: initiatives.goalIds }).from(initiatives).where(isNull(initiatives.archivedAt)).orderBy(asc(initiatives.title)),
   ]);
+  const linkedInitiatives = allInitiatives.filter((i) => ((i.goalIds as string[]) || []).includes(id)).map((i) => ({ id: i.id, title: i.title }));
   const iniTitle = new Map(allInitiatives.map((i) => [i.id, i.title]));
   return {
     goal: g,

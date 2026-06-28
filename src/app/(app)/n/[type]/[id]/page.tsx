@@ -112,7 +112,7 @@ export default async function NodePage({ params }: { params: { type: string; id:
           {initiative.gtdStatus === "someday" && <span className="rounded bg-secondary px-1.5 py-0.5">someday</span>}
         </div>
         <div className="mt-2"><EditableTitle kind="initiative" id={id} value={initiative.title} /></div>
-        <div className="mt-3"><InitiativeGoalLinker initiativeId={id} goalId={initiative.goalId} goals={goalsList.map((g) => ({ id: g.id, title: g.title }))} /></div>
+        <div className="mt-3"><InitiativeGoalLinker initiativeId={id} selected={(initiative.goalIds as string[]) || []} goals={goalsList.map((g) => ({ id: g.id, title: g.title }))} /></div>
         <Section title="Notes"><NotesEditor nodeType="initiative" id={id} initial={initiative.notes ?? ""} /></Section>
         <Section title={`Actions (${actions.length})`}>
           <ul className="space-y-2">
