@@ -144,13 +144,13 @@ function Band({ dom, onLocalReorder }: { dom: Dom; onLocalReorder: (ids: string[
               <div className="flex flex-wrap gap-3">
                 {dom.initiatives.map((i) => <Card key={i.id} ini={i} />)}
                 {addIni ? (
-                  <form className="flex w-48 items-center gap-1"
+                  <form className="flex w-full sm:w-48 items-center gap-1"
                     onSubmit={(e) => { e.preventDefault(); const t = iniTitle.trim(); if (t) start(() => createInitiative(dom.id, t)); setIniTitle(""); setAddIni(false); }}>
                     <Input value={iniTitle} onChange={(e) => setIniTitle(e.target.value)} placeholder="New initiative" autoFocus className="h-9" />
                   </form>
                 ) : (
                   <button onClick={() => setAddIni(true)}
-                    className="flex w-32 items-center justify-center gap-1 rounded-xl border border-dashed py-4 text-xs text-muted-foreground hover:bg-secondary">
+                    className="flex w-full sm:w-32 items-center justify-center gap-1 rounded-xl border border-dashed py-4 text-xs text-muted-foreground hover:bg-secondary">
                     <Plus className="h-3.5 w-3.5" /> Initiative
                   </button>
                 )}
@@ -168,7 +168,7 @@ function Card({ ini }: { ini: Ini }) {
   return (
     <div ref={setNodeRef}
       style={{ transform: CSS.Transform.toString(transform), transition }}
-      className={cn("w-48 rounded-xl border bg-card shadow-sm", isDragging && "opacity-60 shadow-lg")}
+      className={cn("w-full sm:w-48 rounded-xl border bg-card shadow-sm", isDragging && "opacity-60 shadow-lg")}
       {...attributes} {...listeners}>
       <Link href={`/n/initiative/${ini.id}`} className="block p-4" draggable={false}>
         <div className="flex items-start justify-between gap-2">
