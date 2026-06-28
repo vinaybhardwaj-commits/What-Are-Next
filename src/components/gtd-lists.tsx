@@ -28,7 +28,7 @@ export function GtdLists({ tasks, people, contexts }: { tasks: T[]; people: P[];
 
   function add() {
     const t = title.trim(); if (!t || !meta.add) return;
-    start(() => addTaskToList(t, meta.add!, ctx ? [ctx] : []));
+    start(async () => { await addTaskToList(t, meta.add!, ctx ? [ctx] : []); });
     setTitle("");
   }
 

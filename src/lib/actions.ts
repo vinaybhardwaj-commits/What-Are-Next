@@ -35,6 +35,7 @@ export async function createDomain(name: string, color: string) {
   const [d] = await db.insert(domains).values({ name, color, sortOrder: (m?.v ?? 0) + 1 }).returning();
   await log("domain", d.id, "created");
   revalidatePath("/");
+  return d.id;
 }
 export async function renameDomain(id: string, name: string) {
   await db.update(domains).set({ name, updatedAt: new Date() }).where(eq(domains.id, id));
@@ -60,6 +61,7 @@ export async function createInitiative(domainId: string, title: string) {
   const [i] = await db.insert(initiatives).values({ domainId, title, sortOrder: (m?.v ?? 0) + 1 }).returning();
   await log("initiative", i.id, "created");
   revalidatePath("/");
+  return i.id;
 }
 export async function archiveInitiative(id: string) {
   await db.update(initiatives).set({ archivedAt: new Date() }).where(eq(initiatives.id, id));
@@ -78,14 +80,17 @@ export async function updateNotes(nodeType: "initiative" | "action" | "task", id
 /* ---------------- action + task CRUD ---------------- */
 export async function createAction(initiativeId: string, title: string) {
   const [m] = await db.select({ v: max(actions.sortOrder) }).from(actions).where(eq(actions.initiativeId, initiativeId));
-  await db.insert(actions).values({ initiativeId, title, sortOrder: (m?.v ?? 0) + 1 });
+  const [a] = await db.insert(actions).values({ initiativeId, title, sortOrder: (m?.v ?? 0) + 1 }).returning();
+  await log("action", a.id, "created");
   revalidatePath(`/n/initiative/${initiativeId}`);
+  return a.id;
 }
 export async function createTask(actionId: string, title: string) {
   const [m] = await db.select({ v: max(tasks.sortOrder) }).from(tasks).where(eq(tasks.actionId, actionId));
   const [t] = await db.insert(tasks).values({ actionId, title, gtdStatus: "next", sortOrder: (m?.v ?? 0) + 1 }).returning();
   await log("task", t.id, "created");
   revalidatePath(`/n/action/${actionId}`);
+  return t.id;
 }
 export async function toggleTask(id: string, done: boolean, actionId: string) {
   await db.update(tasks).set({
@@ -227,6 +232,7 @@ export async function quickTask(initiativeId: string | null, title: string) {
   const [t] = await db.insert(tasks).values({ title: v, initiativeId, gtdStatus: "next", isNextAction: true, sortOrder: (m?.v ?? 0) + 1 }).returning();
   await log("task", t.id, "created");
   revalGtd();
+  return t.id;
 }
 
 export async function setDue(id: string, dueDate: string | null) {
@@ -386,8 +392,9 @@ export async function createPerson(name: string, role?: string, team?: string) {
   const n = name.trim(); if (!n) return;
   const [{ c }] = await db.select({ c: sql<number>`count(*)::int` }).from(people);
   const color = PERSON_COLORS[(c ?? 0) % PERSON_COLORS.length];
-  await db.insert(people).values({ name: n, role: role?.trim() || null, team: team?.trim() || null, avatarColor: color });
+  const [pr] = await db.insert(people).values({ name: n, role: role?.trim() || null, team: team?.trim() || null, avatarColor: color }).returning();
   revalidatePath("/people"); revalidatePath("/");
+  return pr.id;
 }
 export async function updatePerson(id: string, patch: { name?: string; role?: string | null; team?: string | null }) {
   await db.update(people).set(patch).where(eq(people.id, id));
@@ -408,6 +415,7 @@ export async function addTaskToList(title: string, status: "next" | "someday", c
   }).returning();
   await log("task", row.id, "created");
   revalGtd();
+  return row.id;
 }
 
 /* ============================ Contexts (GTD @contexts registry) ============================ */
@@ -453,4 +461,29 @@ export async function createInitiativeForKernel(coherentActionId: string, goalId
   await db.update(kernelActions).set({ linkedNodeType: "initiative", linkedNodeId: ini.id }).where(eq(kernelActions.id, coherentActionId));
   await log("initiative", ini.id, "created-from-strategy");
   revalStrategy(goalId); revalidatePath("/");
+}
+
+/* ============================ MCP connector helpers (archive-only + status/domain setters) ============================ */
+export async function archiveGoal(id: string) {
+  await db.update(goals).set({ archivedAt: new Date() }).where(eq(goals.id, id));
+  await log("goal", id, "archived");
+  revalStrategy(id); revalidatePath("/strategy");
+}
+export async function archiveAction(id: string) {
+  const [a] = await db.update(actions).set({ archivedAt: new Date() }).where(eq(actions.id, id)).returning();
+  await log("action", id, "archived");
+  if (a) revalidatePath(`/n/initiative/${a.initiativeId}`);
+  revalidatePath("/");
+}
+export async function setInitiativeStatus(id: string, gtdStatus: "next" | "someday") {
+  await db.update(initiatives).set({ gtdStatus, updatedAt: new Date() }).where(eq(initiatives.id, id));
+  revalidatePath("/"); revalidatePath(`/n/initiative/${id}`);
+}
+export async function setInitiativeDomain(id: string, domainId: string) {
+  await db.update(initiatives).set({ domainId, updatedAt: new Date() }).where(eq(initiatives.id, id));
+  revalidatePath("/"); revalidatePath(`/n/initiative/${id}`);
+}
+export async function setActionStatus(id: string, gtdStatus: "next" | "someday") {
+  const [a] = await db.update(actions).set({ gtdStatus, updatedAt: new Date() }).where(eq(actions.id, id)).returning();
+  if (a) revalidatePath(`/n/initiative/${a.initiativeId}`);
 }

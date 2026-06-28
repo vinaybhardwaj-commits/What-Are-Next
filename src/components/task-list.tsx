@@ -21,7 +21,7 @@ export function TaskList({ actionId, tasks }: { actionId: string; tasks: T[] }) 
         );
       })}
       <form className="flex gap-2"
-        onSubmit={(e) => { e.preventDefault(); const v = title.trim(); if (v) start(() => createTask(actionId, v)); setTitle(""); }}>
+        onSubmit={(e) => { e.preventDefault(); const v = title.trim(); if (v) start(async () => { await createTask(actionId, v); }); setTitle(""); }}>
         <input value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Add a task…"
           className="h-9 flex-1 rounded-lg border border-input px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
         <button className="rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground">Add</button>

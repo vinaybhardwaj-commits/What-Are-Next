@@ -56,7 +56,7 @@ export function PeopleManager({ people }: { people: P[] }) {
         {people.map((p) => <PersonChip key={p.id} p={p} />)}
       </div>
       <form className="flex flex-wrap gap-2"
-        onSubmit={(e) => { e.preventDefault(); const n = name.trim(); if (!n) return; start(() => createPerson(n, role)); setName(""); setRole(""); }}>
+        onSubmit={(e) => { e.preventDefault(); const n = name.trim(); if (!n) return; start(async () => { await createPerson(n, role); }); setName(""); setRole(""); }}>
         <input value={name} onChange={(e) => setName(e.target.value)} placeholder="Name" className="h-9 w-44 rounded-lg border border-input px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
         <input value={role} onChange={(e) => setRole(e.target.value)} placeholder="Role (optional)" className="h-9 w-44 rounded-lg border border-input px-3 text-sm outline-none focus:ring-2 focus:ring-ring" />
         <button className="inline-flex items-center gap-1 rounded-lg bg-primary px-3 text-sm font-medium text-primary-foreground"><UserPlus className="h-4 w-4" /> Add person</button>
